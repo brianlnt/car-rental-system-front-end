@@ -1,26 +1,18 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Loading from "./components/Common/Loading/Loading";
+import Message from "./components/Common/Message/Message";
+import { GlobalContextComp } from "./contexts/GlobalContext";
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <div className="App">
+            <GlobalContextComp>
+                <AppRoutes />
+                <Loading />
+                <Message />
+            </GlobalContextComp>
+        </div>
+    );
 }
 
 export default App;
