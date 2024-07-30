@@ -1,5 +1,5 @@
 import { AuthenticatedInfo } from "../../models/authenticated-info/AuthenticatedInfo";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { LocalStorageService } from "../localStorageService";
 import { StatusCode } from "../../models/enums/StatusCodeEnum";
 import { CustomError } from "../../utils/customError";
@@ -20,15 +20,22 @@ export class AuthenticateService {
             const authenticatedInfo: AuthenticatedInfo = response.data;
             const localStorageService = new LocalStorageService();
             localStorageService.saveTokenAndUserInfo(authenticatedInfo);
-        } catch (error: any) {
+        } catch (error) {
+            let errorStatus: number = StatusCode.SERVER_ERROR;
             let errorMsg: string = "Unknown error";
-            if (error.status === StatusCode.UNAUTHORIZED) {
-                errorMsg = "Username or password incorrect";
-            } else if (error.status === StatusCode.BAD_REQUEST) {
-                errorMsg = error.message;
+
+            if (error instanceof AxiosError) {
+                console.log(error);
+                if (error.response?.status === StatusCode.UNAUTHORIZED) {
+                    errorStatus = error.response?.status;
+                    errorMsg = "Username or password incorrect";
+                } else if (error.response?.status === StatusCode.BAD_REQUEST) {
+                    errorStatus = error.response?.status;
+                    errorMsg = error.message;
+                }
             }
 
-            throw new CustomError(error.status, errorMsg, error.statusText);
+            throw new CustomError(errorStatus, errorMsg);
         }
     };
 }

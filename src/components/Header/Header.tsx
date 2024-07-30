@@ -1,5 +1,6 @@
 import {
     AppBar,
+    Avatar,
     Box,
     Button,
     Container,
@@ -7,6 +8,7 @@ import {
     Menu,
     MenuItem,
     Toolbar,
+    Tooltip,
     Typography,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -15,6 +17,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Header.css";
 import { LocalStorageService } from "../../services/localStorageService";
+import { UserLoggedInInfo } from "../../models/authenticated-info/UserLoggedInInfo";
+import { Logout } from "@mui/icons-material";
 
 type Page = {
     id: number;
@@ -22,11 +26,40 @@ type Page = {
     path: string;
 };
 
+const stringToColor = (string: string) => {
+    let hash = 0;
+    let i;
+
+    for (i = 0; i < string.length; i += 1) {
+        hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    let color = "#";
+
+    for (i = 0; i < 3; i += 1) {
+        const value = (hash >> (i * 8)) & 0xff;
+        color += `00${value.toString(16)}`.slice(-2);
+    }
+
+    return color;
+};
+
+const stringAvatar = (name: string) => {
+    return {
+        sx: {
+            bgcolor: stringToColor(name),
+        },
+        children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+    };
+};
+
 export default function Header() {
     const localStorageService = new LocalStorageService();
     const isAdmin: boolean = localStorageService.isAdmin();
+    const currentUser: UserLoggedInInfo | null =
+        localStorageService.getCurrentUserInfo();
 
-    let pages: Page[] = [{ id: 4, name: "Rentals", path: "/rentals" }];
+    let pages: Page[] = [{ id: 1, name: "Rentals", path: "/rentals" }];
     if (isAdmin) {
         pages = [
             { id: 1, name: "Dashboards", path: "/dashboards" },
@@ -35,14 +68,35 @@ export default function Header() {
         ];
     }
 
+    const settings = [
+        { id: 1, name: "Profile", onEvent: () => {} },
+        {
+            id: 2,
+            name: "Logout",
+            onEvent: () => {
+                handleCloseUserMenu();
+                localStorageService.clearLocalstorage();
+                window.location.href = "/login";
+            },
+        },
+    ];
+
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
     };
+    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElUser(event.currentTarget);
+    };
 
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
+    };
+
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
     };
 
     return (
@@ -159,6 +213,52 @@ export default function Header() {
                                 {page.name}
                             </Button>
                         ))}
+                    </Box>
+                    <Box sx={{ flexGrow: 0 }}>
+                        <Tooltip title="Profile Settings">
+                            <IconButton
+                                onClick={handleOpenUserMenu}
+                                sx={{ p: 0 }}
+                            >
+                                <Typography
+                                    sx={{ color: "white" }}
+                                >{`${currentUser?.firstname} ${currentUser?.lastname}`}</Typography>
+                                <Avatar
+                                    alt={`${currentUser?.firstname} ${currentUser?.lastname}`}
+                                    {...stringAvatar(
+                                        `${currentUser?.firstname} ${currentUser?.lastname}`
+                                    )}
+                                    sx={{ ml: 2 }}
+                                />
+                            </IconButton>
+                        </Tooltip>
+                        <Menu
+                            sx={{ mt: "45px" }}
+                            id="menu-appbar"
+                            anchorEl={anchorElUser}
+                            anchorOrigin={{
+                                vertical: "top",
+                                horizontal: "right",
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: "top",
+                                horizontal: "right",
+                            }}
+                            open={Boolean(anchorElUser)}
+                            onClose={handleCloseUserMenu}
+                        >
+                            {settings.map((setting) => (
+                                <MenuItem
+                                    key={setting.id}
+                                    onClick={setting.onEvent}
+                                >
+                                    <Typography textAlign="center">
+                                        {setting.name}
+                                    </Typography>
+                                </MenuItem>
+                            ))}
+                        </Menu>
                     </Box>
                 </Toolbar>
             </Container>
