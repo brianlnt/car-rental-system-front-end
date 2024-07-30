@@ -13,7 +13,7 @@ type Notification = {
 
 const initStateValue: StateType = {
     loading: false,
-    notification: { status: "success" as AlertColor, message: "" },
+    notification: { status: "" as AlertColor, message: "" },
 };
 
 export type GlobalContextType = {

@@ -14,14 +14,27 @@ import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Header.css";
+import { LocalStorageService } from "../../services/localStorageService";
 
-const pages = [
-    { id: 1, name: "Dashboards", path: "/dashboards" },
-    { id: 2, name: "Users", path: "/users" },
-    { id: 3, name: "Vehicles", path: "/vehicles" },
-];
+type Page = {
+    id: number;
+    name: string;
+    path: string;
+};
 
 export default function Header() {
+    const localStorageService = new LocalStorageService();
+    const isAdmin: boolean = localStorageService.isAdmin();
+
+    let pages: Page[] = [{ id: 4, name: "Rentals", path: "/rentals" }];
+    if (isAdmin) {
+        pages = [
+            { id: 1, name: "Dashboards", path: "/dashboards" },
+            { id: 2, name: "Users", path: "/users" },
+            { id: 3, name: "Vehicles", path: "/vehicles" },
+        ];
+    }
+
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
