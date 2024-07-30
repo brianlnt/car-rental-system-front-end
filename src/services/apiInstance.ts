@@ -3,11 +3,11 @@ import { LocalStorageService } from "./localStorageService";
 import { StatusCode } from "../models/enums/StatusCodeEnum";
 import { CustomError } from "../utils/customError";
 
-const axiosApiInstance = axios.create({
+const apiInstance = axios.create({
     baseURL: process.env.REACT_APP_API_URL,
 });
 
-axiosApiInstance.interceptors.request.use(
+apiInstance.interceptors.request.use(
     (config) => {
         const localStorageService = new LocalStorageService();
         const accessToken: string | null = localStorageService.getAccessToken();
@@ -24,7 +24,7 @@ axiosApiInstance.interceptors.request.use(
     }
 );
 
-axiosApiInstance.interceptors.response.use(
+apiInstance.interceptors.response.use(
     (response) => {
         return response;
     },
@@ -43,4 +43,4 @@ axiosApiInstance.interceptors.response.use(
     }
 );
 
-export default axiosApiInstance;
+export default apiInstance;

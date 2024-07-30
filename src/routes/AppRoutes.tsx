@@ -1,4 +1,4 @@
-import { Route, BrowserRouter, Routes } from "react-router-dom";
+import { Route, BrowserRouter, Routes, Navigate } from "react-router-dom";
 import LoginPage from "../pages/LoginPage/LoginPage";
 import UserPage from "../pages/UserPage/UserPage";
 import ErrorPage from "../pages/ErrorPage/ErrorPage";
@@ -10,11 +10,13 @@ import { LocalStorageService } from "../services/localStorageService";
 import { DashboardsContextComp } from "../contexts/DashboardContext";
 import { UsersContextComp } from "../contexts/UserContext";
 import { VehiclesContextComp } from "../contexts/VehicleContext";
-import { LoginContextComp } from "../contexts/LoginContext";
+import { RentalsContextComp } from "../contexts/RentalContext";
+import RentalPage from "../pages/RentalPage/RentalPage";
 
 export default function AppRoutes() {
     const localStorageService = new LocalStorageService();
     const isAuthenticated: boolean = localStorageService.isAuthenticated();
+    const isAdmin: boolean = localStorageService.isAdmin();
 
     return (
         <BrowserRouter>
@@ -22,31 +24,73 @@ export default function AppRoutes() {
                 <AuthorizedLayout>
                     <Routes>
                         <Route element={<DashboardsContextComp />}>
-                            <Route path="/" element={<DashboardPage />} />
+                            <Route
+                                path="/"
+                                element={
+                                    isAdmin ? (
+                                        <DashboardPage />
+                                    ) : (
+                                        <Navigate to="/rentals" />
+                                    )
+                                }
+                            />
                             <Route
                                 path="/dashboards"
-                                element={<DashboardPage />}
+                                element={
+                                    isAdmin ? (
+                                        <DashboardPage />
+                                    ) : (
+                                        <Navigate to="/rentals" />
+                                    )
+                                }
                             />
                         </Route>
                         <Route element={<UsersContextComp />}>
-                            <Route path="/users" element={<UserPage />} />
+                            <Route
+                                path="/users"
+                                element={
+                                    isAdmin ? (
+                                        <UserPage />
+                                    ) : (
+                                        <Navigate to="/rentals" />
+                                    )
+                                }
+                            />
                         </Route>
                         <Route element={<VehiclesContextComp />}>
-                            {" "}
-                            <Route path="/vehicles" element={<VehiclePage />} />
+                            <Route
+                                path="/vehicles"
+                                element={
+                                    isAdmin ? (
+                                        <VehiclePage />
+                                    ) : (
+                                        <Navigate to="/rentals" />
+                                    )
+                                }
+                            />
+                        </Route>
+                        <Route element={<RentalsContextComp />}>
+                            <Route
+                                path="/rentals"
+                                element={
+                                    !isAdmin ? (
+                                        <RentalPage />
+                                    ) : (
+                                        <Navigate to="/dashboards" />
+                                    )
+                                }
+                            />
                         </Route>
                         <Route path="*" element={<ErrorPage />} />
                     </Routes>
                 </AuthorizedLayout>
             ) : (
-                <LoginContextComp>
-                    <UnauthorizedLayout>
-                        <Routes>
-                            <Route path="/*" element={<LoginPage />} />
-                            <Route path="/login" element={<LoginPage />} />
-                        </Routes>
-                    </UnauthorizedLayout>
-                </LoginContextComp>
+                <UnauthorizedLayout>
+                    <Routes>
+                        <Route path="/*" element={<LoginPage />} />
+                        <Route path="/login" element={<LoginPage />} />
+                    </Routes>
+                </UnauthorizedLayout>
             )}
         </BrowserRouter>
     );

@@ -1,28 +1,29 @@
+import { AxiosResponse } from "axios";
 import { User } from "../../models/User";
-import axiosApiInstance from "../axiosApiInstance";
+import apiInstance from "../apiInstance";
 
 export class UserService {
     private USER_ENDPOINT: string = "/v1/users";
 
     addUser = async (user: User): Promise<User> => {
-        const response: Response = await axiosApiInstance.post(
+        const response: AxiosResponse = await apiInstance.post(
             this.USER_ENDPOINT,
             user
         );
-        return await response.json();
+        return await response.data;
     };
 
     getAllUsers = async (): Promise<User[]> => {
-        const response: Response = await axiosApiInstance.get(
+        const response: AxiosResponse = await apiInstance.get(
             this.USER_ENDPOINT
         );
-        return await response.json();
+        return await response.data;
     };
 
     getUserById = async (id: string): Promise<User> => {
-        const response: Response = await axiosApiInstance.get(
+        const response: AxiosResponse = await apiInstance.get(
             `${this.USER_ENDPOINT}/${id}`
         );
-        return await response.json();
+        return await response.data;
     };
 }

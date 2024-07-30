@@ -1,8 +1,52 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
-import { Link } from "react-router-dom";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+import { Controller, useForm } from "react-hook-form";
+import { useContext } from "react";
+import { GlobalContext } from "../../contexts/GlobalContext";
+import { AuthenticateService } from "../../services/authenticate/authenticateService";
+import { CustomError } from "../../utils/customError";
+import { useNavigate } from "react-router-dom";
+
+const validationSchema = Yup.object().shape({
+    username: Yup.string().required("Username is required"),
+    password: Yup.string().required("Password is required"),
+});
 
 export default function LoginForm() {
+    const navigate = useNavigate();
+    const authenticationService = new AuthenticateService();
+    const { updateLoading, updateNotification } = useContext(GlobalContext);
+    const {
+        handleSubmit,
+        control,
+        formState: { errors },
+    } = useForm({
+        resolver: yupResolver(validationSchema),
+    });
+
+    const onSubmit = async (data: { username: string; password: string }) => {
+        try {
+            updateLoading(true);
+            await authenticationService.authenticate(
+                data.username,
+                data.password
+            );
+            updateLoading(false);
+            window.location.href = "/dashboards";
+        } catch (error) {
+            updateLoading(false);
+            updateNotification({
+                status: "error",
+                message:
+                    error instanceof CustomError
+                        ? error.message
+                        : "Unknow message",
+            });
+        }
+    };
+
     return (
         <Box
             component="form"
@@ -16,6 +60,7 @@ export default function LoginForm() {
             }}
             noValidate
             autoComplete="off"
+            onSubmit={handleSubmit(onSubmit)}
         >
             <div>
                 <Typography
@@ -25,20 +70,38 @@ export default function LoginForm() {
                 </Typography>
             </div>
             <div>
-                <TextField
-                    required
-                    fullWidth
-                    label="Username"
-                    placeholder="Enter your username"
+                <Controller
                     name="username"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            required
+                            fullWidth
+                            label="Username"
+                            placeholder="Enter your username"
+                            error={errors.username ? true : false}
+                            helperText={errors.username?.message}
+                        />
+                    )}
                 />
-                <TextField
-                    required
-                    fullWidth
-                    label="Password"
-                    type="password"
-                    placeholder="Enter your password"
+                <Controller
                     name="password"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            required
+                            fullWidth
+                            label="Password"
+                            type="password"
+                            placeholder="Enter your password"
+                            error={errors.password ? true : false}
+                            helperText={errors.password?.message}
+                        />
+                    )}
                 />
             </div>
             <div>
