@@ -6,7 +6,7 @@ import AuthorizedLayout from "../layouts/AuthorizedLayout/AuthorizedLayout";
 import UnauthorizedLayout from "../layouts/UnauthorizedLayout/UnauthorizedLayout";
 import DashboardPage from "../pages/DashboardPage/DashboardPage";
 import VehiclePage from "../pages/VehiclePage/VehiclePage";
-import { LocalStorageService } from "../services/localStorageService";
+import { SessionStorageService } from "../services/sessionStorageService";
 import { DashboardsContextComp } from "../contexts/DashboardContext";
 import { UsersContextComp } from "../contexts/UserContext";
 import { VehiclesContextComp } from "../contexts/VehicleContext";
@@ -14,9 +14,9 @@ import { RentalsContextComp } from "../contexts/RentalContext";
 import RentalPage from "../pages/RentalPage/RentalPage";
 
 export default function AppRoutes() {
-    const localStorageService = new LocalStorageService();
-    const isAuthenticated: boolean = localStorageService.isAuthenticated();
-    const isAdmin: boolean = localStorageService.isAdmin();
+    const sessionStorageService = new SessionStorageService();
+    const isAuthenticated: boolean = sessionStorageService.isAuthenticated();
+    const isAdmin: boolean = sessionStorageService.isAdmin();
 
     return (
         <BrowserRouter>

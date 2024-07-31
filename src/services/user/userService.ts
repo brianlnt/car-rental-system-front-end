@@ -10,20 +10,21 @@ export class UserService {
             this.USER_ENDPOINT,
             user
         );
-        return await response.data;
+        return response.data;
     };
 
     getAllUsers = async (): Promise<User[]> => {
         const response: AxiosResponse = await apiInstance.get(
             this.USER_ENDPOINT
         );
-        return await response.data;
+        console.log(response);
+        return response.data;
     };
 
     getUserById = async (id: string): Promise<User> => {
         const response: AxiosResponse = await apiInstance.get(
             `${this.USER_ENDPOINT}/${id}`
         );
-        return await response.data;
+        return response.data;
     };
 }

@@ -16,7 +16,7 @@ import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Header.css";
-import { LocalStorageService } from "../../services/localStorageService";
+import { SessionStorageService } from "../../services/sessionStorageService";
 import { UserLoggedInInfo } from "../../models/authenticated-info/UserLoggedInInfo";
 import { Logout } from "@mui/icons-material";
 
@@ -54,10 +54,10 @@ const stringAvatar = (name: string) => {
 };
 
 export default function Header() {
-    const localStorageService = new LocalStorageService();
-    const isAdmin: boolean = localStorageService.isAdmin();
+    const sessionStorageService = new SessionStorageService();
+    const isAdmin: boolean = sessionStorageService.isAdmin();
     const currentUser: UserLoggedInInfo | null =
-        localStorageService.getCurrentUserInfo();
+        sessionStorageService.getCurrentUserInfo();
 
     let pages: Page[] = [{ id: 1, name: "Rentals", path: "/rentals" }];
     if (isAdmin) {
@@ -75,7 +75,7 @@ export default function Header() {
             name: "Logout",
             onEvent: () => {
                 handleCloseUserMenu();
-                localStorageService.clearLocalstorage();
+                sessionStorageService.clearSessionStorage();
                 window.location.href = "/login";
             },
         },

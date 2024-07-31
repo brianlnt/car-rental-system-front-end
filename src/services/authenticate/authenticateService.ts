@@ -1,6 +1,6 @@
 import { AuthenticatedInfo } from "../../models/authenticated-info/AuthenticatedInfo";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { LocalStorageService } from "../localStorageService";
+import { SessionStorageService } from "../sessionStorageService";
 import { StatusCode } from "../../models/enums/StatusCodeEnum";
 import { CustomError } from "../../utils/customError";
 
@@ -18,14 +18,13 @@ export class AuthenticateService {
                 }
             );
             const authenticatedInfo: AuthenticatedInfo = response.data;
-            const localStorageService = new LocalStorageService();
-            localStorageService.saveTokenAndUserInfo(authenticatedInfo);
+            const sessionStorageService = new SessionStorageService();
+            sessionStorageService.saveTokenAndUserInfo(authenticatedInfo);
         } catch (error) {
             let errorStatus: number = StatusCode.SERVER_ERROR;
             let errorMsg: string = "Unknown error";
 
             if (error instanceof AxiosError) {
-                console.log(error);
                 if (error.response?.status === StatusCode.UNAUTHORIZED) {
                     errorStatus = error.response?.status;
                     errorMsg = "Username or password incorrect";

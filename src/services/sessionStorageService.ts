@@ -3,7 +3,7 @@ import { TokenInfo } from "../models/authenticated-info/TokenInfo";
 import { UserLoggedInInfo } from "../models/authenticated-info/UserLoggedInInfo";
 import { Role } from "../models/enums/RoleEnum";
 
-export class LocalStorageService {
+export class SessionStorageService {
     private TOKEN_KEY: string = "token_info";
 
     private USER_INFO_KEY: string = "user_info";
@@ -15,7 +15,7 @@ export class LocalStorageService {
             refreshToken: authenticatedInfo.refreshToken,
         };
 
-        localStorage.setItem(this.TOKEN_KEY, JSON.stringify(tokenInfo));
+        sessionStorage.setItem(this.TOKEN_KEY, JSON.stringify(tokenInfo));
 
         const userInfo: UserLoggedInInfo = {
             id: authenticatedInfo.id,
@@ -26,12 +26,12 @@ export class LocalStorageService {
             roles: authenticatedInfo.roles,
         };
 
-        localStorage.setItem(this.USER_INFO_KEY, JSON.stringify(userInfo));
+        sessionStorage.setItem(this.USER_INFO_KEY, JSON.stringify(userInfo));
     };
 
     removeTokenAndUserInfo = (): void => {
-        localStorage.removeItem(this.TOKEN_KEY);
-        localStorage.removeItem(this.USER_INFO_KEY);
+        sessionStorage.removeItem(this.TOKEN_KEY);
+        sessionStorage.removeItem(this.USER_INFO_KEY);
     };
 
     getTokenInfo = (): TokenInfo | null => {
@@ -73,12 +73,12 @@ export class LocalStorageService {
         );
     };
 
-    clearLocalstorage = (): void => {
-        localStorage.clear();
+    clearSessionStorage = (): void => {
+        sessionStorage.clear();
     };
 
     private getItem = (key: string) => {
-        const data: string | null = localStorage.getItem(key);
+        const data: string | null = sessionStorage.getItem(key);
         if (data) {
             return JSON.parse(data);
         }
