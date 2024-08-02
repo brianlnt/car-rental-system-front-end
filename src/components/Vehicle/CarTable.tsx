@@ -1,4 +1,3 @@
-// src/components/CarTable.tsx
 import React from 'react';
 import {
   Table,
@@ -13,15 +12,7 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-
-interface Car {
-  id: string;
-  make: string;
-  model: string;
-  year: number;
-  pricePerDay: number;
-  availability: boolean;
-}
+import { Car } from '../../models/Car';
 
 interface CarTableProps {
   cars: Car[];
@@ -61,6 +52,7 @@ const CarTable: React.FC<CarTableProps> = ({
             <TableCell>Make</TableCell>
             <TableCell>Model</TableCell>
             <TableCell>Year</TableCell>
+            <TableCell>Plate Number</TableCell>
             <TableCell>Price Per Day</TableCell>
             <TableCell>Availability</TableCell>
           </TableRow>
@@ -80,6 +72,7 @@ const CarTable: React.FC<CarTableProps> = ({
               <TableCell>{car.make}</TableCell>
               <TableCell>{car.model}</TableCell>
               <TableCell>{car.year}</TableCell>
+              <TableCell>{car.licensePlateNumber}</TableCell>
               <TableCell>{car.pricePerDay}</TableCell>
               <TableCell>{car.availability ? 'Available' : 'Unavailable'}</TableCell>
             </TableRow>

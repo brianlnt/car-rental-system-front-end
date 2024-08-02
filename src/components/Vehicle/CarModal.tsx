@@ -1,4 +1,3 @@
-// src/components/CarModal.tsx
 import React from 'react';
 import {
   Dialog,
@@ -11,15 +10,7 @@ import {
   FormControlLabel,
   Checkbox,
 } from '@mui/material';
-
-interface Car {
-  id: string;
-  make: string;
-  model: string;
-  year: number;
-  pricePerDay: number;
-  availability: boolean;
-}
+import { Car } from '../../models/Car';
 
 interface CarModalProps {
   open: boolean;

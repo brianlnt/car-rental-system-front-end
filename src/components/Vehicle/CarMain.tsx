@@ -1,4 +1,3 @@
-// src/App.tsx
 import React, { useState } from 'react';
 import { Container, Button, Box, TextField, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -11,7 +10,7 @@ const CarMain: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentCar, setCurrentCar] = useState<Car | null>(null);
-  const [formValues, setFormValues] = useState<Car>({ id: '', make: '', model: '', year: new Date().getFullYear(), pricePerDay: 0, availability: true });
+  const [formValues, setFormValues] = useState<Car>({ id: '', make: '', model: '', year: new Date().getFullYear(), licensePlateNumber: '', pricePerDay: 0, availability: true });
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,7 +22,7 @@ const CarMain: React.FC = () => {
       setCurrentCar(car);
     } else {
       setIsEditing(false);
-      setFormValues({ id: '', make: '', model: '', year: new Date().getFullYear(), pricePerDay: 0, availability: true });
+      setFormValues({ id: '', make: '', model: '', year: new Date().getFullYear(), licensePlateNumber: '', pricePerDay: 0, availability: true });
       setCurrentCar(null);
     }
     setOpen(true);
