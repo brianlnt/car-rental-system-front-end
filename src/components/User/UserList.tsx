@@ -2,13 +2,11 @@ import { Box, Button } from "@mui/material";
 import {
     DataGrid,
     GridColDef,
-    GridFilterItem,
     GridFilterModel,
     GridPaginationModel,
     GridSortItem,
-    GridSortModel,
 } from "@mui/x-data-grid";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { UserService } from "../../services/user/userService";
 import { UserContext } from "../../contexts/UserContext";
 import { GlobalContext } from "../../contexts/GlobalContext";
@@ -16,6 +14,9 @@ import { User } from "../../models/User";
 import { useLocation } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { FilterAndSortTable } from "../../models/FilterAndSortTable";
+import { Page } from "../../models/Page";
+import { debounce } from "lodash";
 
 const columns: GridColDef<User>[] = [
     {
@@ -59,6 +60,7 @@ const columns: GridColDef<User>[] = [
         headerName: "Action",
         width: 150,
         sortable: false,
+        filterable: false,
         renderCell: (params) => {
             const onClickEdit = () => {
                 console.log("edit", params.row.userId);
@@ -82,13 +84,6 @@ const columns: GridColDef<User>[] = [
     },
 ];
 
-type TableChangeType = {
-    page: number;
-    pageSize: number;
-    sortModel: GridSortItem[];
-    filterModel: { items: GridFilterItem[] };
-};
-
 export default function UserList() {
     const location = useLocation();
     const userService = new UserService();
@@ -96,30 +91,34 @@ export default function UserList() {
     const { users, updateUsers, totalRows, updateTotalRows } =
         useContext(UserContext);
 
-    const initTableChange: TableChangeType = {
-        page: 1,
+    const initFilterAndSortTable: FilterAndSortTable = {
+        page: 0,
         pageSize: 10,
-        sortModel: [],
+        sortModels: [],
         filterModel: { items: [] },
     };
 
-    const [tableChangeType, setTableChangeType] =
-        useState<TableChangeType>(initTableChange);
+    const [filterAndSortTable, setFilterAndSortTable] =
+        useState<FilterAndSortTable>(initFilterAndSortTable);
 
-    useEffect(() => {
-        fetchUserList();
-    }, [location, tableChangeType]);
-
-    const fetchUserList = async () => {
+    const fetchUserList = async (filterAndSortTable: FilterAndSortTable) => {
         updateLoading(true);
-        const users: User[] = await userService.getAllUsers();
-        updateUsers(users);
-        updateTotalRows(users.length);
+        const userPage: Page<User> = await userService.getUsersByFilter(
+            filterAndSortTable
+        );
+        updateUsers(userPage.content);
+        updateTotalRows(userPage.totalElements);
         updateLoading(false);
     };
 
+    const debouncedFetchData = useCallback(debounce(fetchUserList, 500), []);
+
+    useEffect(() => {
+        debouncedFetchData(filterAndSortTable);
+    }, [location, filterAndSortTable]);
+
     const changePaginationModel = (paginationModel: GridPaginationModel) => {
-        setTableChangeType((prev) => ({
+        setFilterAndSortTable((prev) => ({
             ...prev,
             page: paginationModel.page,
             pageSize: paginationModel.pageSize,
@@ -127,14 +126,14 @@ export default function UserList() {
     };
 
     const changeSortModel = (sortModels: GridSortItem[]) => {
-        setTableChangeType((prev) => ({
+        setFilterAndSortTable((prev) => ({
             ...prev,
-            sortModel: [...sortModels],
+            sortModels: [...sortModels],
         }));
     };
 
     const changeFilterModel = (filterModel: GridFilterModel) => {
-        setTableChangeType((prev) => ({
+        setFilterAndSortTable((prev) => ({
             ...prev,
             filterModel: {
                 items: filterModel.items,
@@ -151,6 +150,13 @@ export default function UserList() {
                 disableRowSelectionOnClick
                 pageSizeOptions={[5, 10, 15]}
                 rowCount={totalRows}
+                initialState={{
+                    pagination: {
+                        paginationModel: {
+                            pageSize: filterAndSortTable.pageSize,
+                        },
+                    },
+                }}
                 filterMode="server"
                 sortingMode="server"
                 paginationMode="server"
