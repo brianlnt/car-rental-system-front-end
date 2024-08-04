@@ -20,33 +20,33 @@ import { VehicleService } from "../../services/vehicle/vehicleService";
 
 const columns: GridColDef<Vehicle>[] = [
     {
-        field: "carId",
-        headerName: "Car Id",
-        width: 150,
+        field: "vehicleId",
+        headerName: "Id",
+        width: 100,
         editable: true,
     },
     {
         field: "make",
         headerName: "Make",
-        width: 200,
+        width: 150,
         editable: true,
     },
     {
         field: "model",
         headerName: "Model",
-        width: 200,
+        width: 150,
         editable: true,
     },
     {
         field: "year",
         headerName: "Year",
-        width: 150,
+        width: 100,
         editable: true,
     },
     {
         field: "licensePlateNumber",
         headerName: "License Plate Number",
-        width: 200,
+        width: 220,
         editable: true,
     },
     {
@@ -56,9 +56,9 @@ const columns: GridColDef<Vehicle>[] = [
         editable: true,
     },
     {
-        field: "availability",
-        headerName: "Availability",
-        width: 150,
+        field: "availableStatus",
+        headerName: "Status",
+        width: 120,
         editable: true,
     },
     {

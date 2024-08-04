@@ -24,7 +24,7 @@ const validationSchema = Yup.object().shape({
     year: Yup.number().required("Year is required"),
     licensePlateNumber: Yup.string().required("License Plate Number is required"),
     rentalPrice: Yup.number().required("Rental Price is required"),
-    availability: Yup.boolean().required("Availability is required")
+    availableStatus: Yup.string().required("Availability is required")
 });
 
 export default function AddVehicleDialog() {
@@ -51,7 +51,7 @@ export default function AddVehicleDialog() {
         year: number;
         licensePlateNumber: string;
         rentalPrice: number;
-        availability: boolean;
+        availableStatus: string;
     }): Promise<void> => {
         try {
             updateLoading(true);
@@ -62,7 +62,7 @@ export default function AddVehicleDialog() {
                 year: data.year,
                 licensePlateNumber: data.licensePlateNumber,
                 rentalPrice: data.rentalPrice,
-                availability: data.availability,
+                availableStatus: data.availableStatus,
             };
             await vehicleService.addVehicle(vehicle);
             updateLoading(false);
@@ -198,18 +198,18 @@ export default function AddVehicleDialog() {
                             )}
                         />
                         <Controller
-                            name="availability"
+                            name="availableStatus"
                             control={control}
-                            defaultValue={true}
+                            defaultValue="available"
                             render={({ field }) => (
                                 <TextField
                                     {...field}
                                     required
                                     fullWidth
-                                    label="Availability"
-                                    placeholder="Enter availability"
-                                    error={errors.availability ? true : false}
-                                    helperText={errors.availability?.message}
+                                    label="Availability Status"
+                                    placeholder="Enter availability status"
+                                    error={errors.availableStatus ? true : false}
+                                    helperText={errors.availableStatus?.message}
                                 />
                             )}
                         />

@@ -5,5 +5,5 @@ export interface Vehicle {
   year: number;
   licensePlateNumber: string;
   rentalPrice: number;
-  availability: boolean;
+  availableStatus: string;
 }
