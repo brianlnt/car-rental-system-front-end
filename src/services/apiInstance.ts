@@ -40,6 +40,11 @@ apiInstance.interceptors.response.use(
                     error.response?.status,
                     error.response?.statusText
                 );
+            } else if (error.response?.status === StatusCode.NOT_FOUND) {
+                throw new CustomError(
+                    error.response?.status,
+                    "Entity not found"
+                );
             } else {
                 window.location.href = "/error";
             }

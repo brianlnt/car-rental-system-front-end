@@ -18,78 +18,94 @@ import { FilterAndSortTable } from "../../models/FilterAndSortTable";
 import { Page } from "../../models/Page";
 import { debounce } from "lodash";
 
-const columns: GridColDef<User>[] = [
-    {
-        field: "username",
-        headerName: "Username",
-        width: 150,
-        editable: true,
-    },
-    {
-        field: "firstname",
-        headerName: "First Name",
-        width: 200,
-        editable: true,
-    },
-    {
-        field: "lastname",
-        headerName: "Last Name",
-        width: 200,
-        editable: true,
-    },
-    {
-        field: "email",
-        headerName: "Email",
-        width: 150,
-        editable: true,
-    },
-    {
-        field: "address",
-        headerName: "Address",
-        width: 200,
-        editable: true,
-    },
-    {
-        field: "phone",
-        headerName: "Phone",
-        width: 150,
-        editable: true,
-    },
-    {
-        field: "action",
-        headerName: "Action",
-        width: 150,
-        sortable: false,
-        filterable: false,
-        renderCell: (params) => {
-            const onClickEdit = () => {
-                console.log("edit", params.row.userId);
-            };
-
-            const onClickDelete = () => {
-                console.log("delete", params.row.userId);
-            };
-
-            return (
-                <Box>
-                    <Button onClick={onClickEdit}>
-                        <EditIcon />
-                    </Button>
-                    <Button onClick={onClickDelete}>
-                        <DeleteIcon />
-                    </Button>
-                </Box>
-            );
-        },
-    },
-];
-
 export default function UserList() {
     const location = useLocation();
-    const userService = new UserService();
     const { updateLoading } = useContext(GlobalContext);
-    const { users, updateUsers, totalRows, updateTotalRows } =
-        useContext(UserContext);
+    const {
+        users,
+        totalRows,
+        isCompletedAddUser,
+        isCompletedEditUser,
+        isCompletedDeleteUser,
+        updateUsers,
+        updateTotalRows,
+        updateSelectedUserId,
+        updateIsCompletedAddUser,
+        updateIsCompletedEditUser,
+        updateIsCompletedDeleteUser,
+        updateIsShowUpdateUserDialog,
+    } = useContext(UserContext);
+
+    const userService = new UserService();
+    const columns: GridColDef<User>[] = [
+        {
+            field: "username",
+            headerName: "Username",
+            width: 150,
+            editable: true,
+        },
+        {
+            field: "firstname",
+            headerName: "First Name",
+            width: 200,
+            editable: true,
+        },
+        {
+            field: "lastname",
+            headerName: "Last Name",
+            width: 200,
+            editable: true,
+        },
+        {
+            field: "email",
+            headerName: "Email",
+            width: 150,
+            editable: true,
+        },
+        {
+            field: "address",
+            headerName: "Address",
+            width: 200,
+            editable: true,
+        },
+        {
+            field: "phone",
+            headerName: "Phone",
+            width: 150,
+            editable: true,
+        },
+        {
+            field: "action",
+            headerName: "Action",
+            width: 150,
+            sortable: false,
+            filterable: false,
+            renderCell: (params) => {
+                const onClickEdit = () => {
+                    updateSelectedUserId(params.row.userId || 0);
+                    updateIsShowUpdateUserDialog(true);
+                };
+
+                const onClickDelete = async () => {
+                    updateLoading(true);
+                    await userService.deleteUserById(params.row.userId);
+                    updateIsCompletedDeleteUser(true);
+                    updateLoading(false);
+                };
+
+                return (
+                    <Box>
+                        <Button onClick={onClickEdit}>
+                            <EditIcon />
+                        </Button>
+                        <Button onClick={onClickDelete}>
+                            <DeleteIcon />
+                        </Button>
+                    </Box>
+                );
+            },
+        },
+    ];
 
     const initFilterAndSortTable: FilterAndSortTable = {
         page: 0,
@@ -103,6 +119,7 @@ export default function UserList() {
 
     const fetchUserList = async (filterAndSortTable: FilterAndSortTable) => {
         updateLoading(true);
+        resetCompletedUserEvent();
         const userPage: Page<User> = await userService.getUsersByFilter(
             filterAndSortTable
         );
@@ -116,6 +133,22 @@ export default function UserList() {
     useEffect(() => {
         debouncedFetchData(filterAndSortTable);
     }, [location, filterAndSortTable]);
+
+    useEffect(() => {
+        if (
+            isCompletedAddUser ||
+            isCompletedEditUser ||
+            isCompletedDeleteUser
+        ) {
+            debouncedFetchData(filterAndSortTable);
+        }
+    }, [isCompletedAddUser, isCompletedEditUser, isCompletedDeleteUser]);
+
+    const resetCompletedUserEvent = () => {
+        updateIsCompletedAddUser(false);
+        updateIsCompletedEditUser(false);
+        updateIsCompletedDeleteUser(false);
+    };
 
     const changePaginationModel = (paginationModel: GridPaginationModel) => {
         setFilterAndSortTable((prev) => ({

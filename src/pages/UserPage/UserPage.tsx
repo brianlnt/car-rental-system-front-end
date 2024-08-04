@@ -8,9 +8,21 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import UserList from "../../components/User/UserList";
+import { useContext } from "react";
+import { UserContext } from "../../contexts/UserContext";
+import AddUserDialog from "../../components/User/AddUserDialog";
+import EditUserDialog from "../../components/User/EditUserDialog";
 
 export default function UserPage() {
-    const showAddUserDialog = () => {};
+    const {
+        isShowAddUserDialog,
+        updateIsShowAddUserDialog,
+        isShowUpdateUserDialog,
+    } = useContext(UserContext);
+
+    const showAddUserDialog = () => {
+        updateIsShowAddUserDialog(true);
+    };
 
     return (
         <Container maxWidth="xl">
@@ -32,12 +44,14 @@ export default function UserPage() {
                             onClick={showAddUserDialog}
                             startIcon={<AddIcon />}
                         >
-                            Add
+                            Add User
                         </Button>
                     </Box>
                     <UserList />
                 </CardContent>
             </Card>
+            {isShowAddUserDialog && <AddUserDialog />}
+            {isShowUpdateUserDialog && <EditUserDialog />}
         </Container>
     );
 }
