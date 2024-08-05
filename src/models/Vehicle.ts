@@ -2,8 +2,8 @@ export interface Vehicle {
   vehicleId: number;
   make: string;
   model: string;
-  year: number;
+  year: string;
   licensePlateNumber: string;
   rentalPrice: number;
-  availability: boolean;
+  availableStatus: string;
 }

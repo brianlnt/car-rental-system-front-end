@@ -6,7 +6,7 @@ import {
     DialogTitle,
     TextField,
 } from "@mui/material";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import * as Yup from "yup";
 import { VehicleContext } from "../../contexts/VehicleContext";
 import { Controller, useForm } from "react-hook-form";
@@ -27,13 +27,15 @@ const validationSchema = Yup.object().shape({
     availableStatus: Yup.string().required("Availability is required")
 });
 
-export default function AddVehicleDialog() {
+export default function EditVehicleDialog() {
     const vehicleService = new VehicleService();
     const { updateLoading, updateNotification } = useContext(GlobalContext);
     const {
-        isShowAddVehicleDialog,
-        updateIsShowAddVehicleDialog,
-        updateIsCompletedAddVehicle,
+        selectedVehicleId,
+        isShowUpdateVehicleDialog,
+        isCompletedEditVehicle,
+        updateIsShowUpdateVehicleDialog,
+        updateIsCompletedEditVehicle,
     } = useContext(VehicleContext);
 
     const {
@@ -56,7 +58,7 @@ export default function AddVehicleDialog() {
         try {
             updateLoading(true);
             const vehicle: Vehicle = {
-                vehicleId: 0,
+                vehicleId: selectedVehicleId,
                 make: data.make,
                 model: data.model,
                 year: data.year,
@@ -64,14 +66,39 @@ export default function AddVehicleDialog() {
                 rentalPrice: data.rentalPrice,
                 availableStatus: data.availableStatus,
             };
-            await vehicleService.addVehicle(vehicle);
+            await vehicleService.updateVehicleById(selectedVehicleId, vehicle);
             updateLoading(false);
-            updateIsShowAddVehicleDialog(false);
-            updateIsCompletedAddVehicle(true);
+            updateIsShowUpdateVehicleDialog(false);
+            updateIsCompletedEditVehicle(true);
             updateNotification({
                 status: "success",
-                message: "Create vehicle successfully",
+                message: "Updated vehicle successfully",
             });
+        } catch (error) {
+            updateLoading(false);
+            updateNotification({
+                status: "error",
+                message:
+                    error instanceof CustomError
+                        ? error.message
+                        : "Unknow message",
+            });
+        }
+    };
+
+    const fetchVehicleById = async () => {
+        try {
+            updateLoading(true);
+            const vehicle: Vehicle = await vehicleService.getVehicleById(selectedVehicleId);
+            reset({
+                make: vehicle.make,
+                model: vehicle.model,
+                year: vehicle.year,
+                licensePlateNumber: vehicle.licensePlateNumber,
+                rentalPrice: vehicle.rentalPrice,
+                availableStatus: vehicle.availableStatus,
+            });
+            updateLoading(false);
         } catch (error) {
             updateLoading(false);
             updateNotification({
@@ -86,13 +113,17 @@ export default function AddVehicleDialog() {
 
     const handleClose = () => {
         reset();
-        updateIsShowAddVehicleDialog(false);
+        updateIsShowUpdateVehicleDialog(false);
     };
+
+    useEffect(() => {
+        fetchVehicleById();
+    }, []);
 
     return (
         <>
             <Dialog
-                open={isShowAddVehicleDialog}
+                open={isShowUpdateVehicleDialog}
                 onClose={handleClose}
                 PaperProps={{
                     component: "form",
@@ -110,10 +141,10 @@ export default function AddVehicleDialog() {
                     maxHeight: 600,
                 }}
             >
-                <DialogTitle>Add Vehicle</DialogTitle>
+                <DialogTitle>Edit Vehicle</DialogTitle>
                 <DialogContent>
                     <div>
-                        <Controller
+                    <Controller
                             name="make"
                             control={control}
                             defaultValue=""
@@ -184,7 +215,7 @@ export default function AddVehicleDialog() {
                         <Controller
                             name="rentalPrice"
                             control={control}
-                            defaultValue={100}
+                            defaultValue={0}
                             render={({ field }) => (
                                 <TextField
                                     {...field}

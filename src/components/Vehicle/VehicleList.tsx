@@ -18,83 +18,102 @@ import { FilterAndSortTable } from "../../models/FilterAndSortTable";
 import { Page } from "../../models/Page";
 import { VehicleService } from "../../services/vehicle/vehicleService";
 
-const columns: GridColDef<Vehicle>[] = [
-    {
-        field: "carId",
-        headerName: "Car Id",
-        width: 150,
-        editable: true,
-    },
-    {
-        field: "make",
-        headerName: "Make",
-        width: 200,
-        editable: true,
-    },
-    {
-        field: "model",
-        headerName: "Model",
-        width: 200,
-        editable: true,
-    },
-    {
-        field: "year",
-        headerName: "Year",
-        width: 150,
-        editable: true,
-    },
-    {
-        field: "licensePlateNumber",
-        headerName: "License Plate Number",
-        width: 200,
-        editable: true,
-    },
-    {
-        field: "rentalPrice",
-        headerName: "Rental Price",
-        width: 150,
-        editable: true,
-    },
-    {
-        field: "availability",
-        headerName: "Availability",
-        width: 150,
-        editable: true,
-    },
-    {
-        field: "action",
-        headerName: "Action",
-        width: 150,
-        sortable: false,
-        filterable: false,
-        renderCell: (params) => {
-            const onClickEdit = () => {
-                console.log("edit", params.row.vehicleId);
-            };
 
-            const onClickDelete = () => {
-                console.log("delete", params.row.vehicleId);
-            };
-
-            return (
-                <Box>
-                    <Button onClick={onClickEdit}>
-                        <EditIcon />
-                    </Button>
-                    <Button onClick={onClickDelete}>
-                        <DeleteIcon />
-                    </Button>
-                </Box>
-            );
-        },
-    },
-];
 
 export default function VehicleList() {
     const location = useLocation();
     const vehicleService = new VehicleService();
     const { updateLoading } = useContext(GlobalContext);
-    const { vehicles, updateVehicles, totalRows, updateTotalRows } = useContext(VehicleContext);
+    const {
+        vehicles,
+        totalRows,
+        isCompletedAddVehicle,
+        isCompletedEditVehicle,
+        isCompletedDeleteVehicle,
+        updateVehicles,
+        updateTotalRows,
+        updateSelectedVehicleId,
+        updateIsCompletedAddVehicle,
+        updateIsCompletedEditVehicle,
+        updateIsCompletedDeleteVehicle,
+        updateIsShowUpdateVehicleDialog,
+    } = useContext(VehicleContext);
+
+    const columns: GridColDef<Vehicle>[] = [
+        {
+            field: "vehicleId",
+            headerName: "Id",
+            width: 100,
+            editable: true,
+        },
+        {
+            field: "make",
+            headerName: "Make",
+            width: 150,
+            editable: true,
+        },
+        {
+            field: "model",
+            headerName: "Model",
+            width: 150,
+            editable: true,
+        },
+        {
+            field: "year",
+            headerName: "Year",
+            width: 100,
+            editable: true,
+        },
+        {
+            field: "licensePlateNumber",
+            headerName: "License Plate Number",
+            width: 220,
+            editable: true,
+        },
+        {
+            field: "rentalPrice",
+            headerName: "Rental Price",
+            width: 150,
+            editable: true,
+        },
+        {
+            field: "availableStatus",
+            headerName: "Status",
+            width: 120,
+            editable: true,
+        },
+        {
+            field: "action",
+            headerName: "Action",
+            width: 150,
+            sortable: false,
+            filterable: false,
+            renderCell: (params) => {
+                const onClickEdit = () => {
+                    updateSelectedVehicleId(params.row.vehicleId || 0);
+                    updateIsShowUpdateVehicleDialog(true);
+                };
+    
+                const onClickDelete = async () => {
+                    updateLoading(true);
+                    await vehicleService.deleteVehicleById(params.row.vehicleId);
+                    updateIsCompletedDeleteVehicle(true);
+                    updateLoading(false);
+                };
+    
+                return (
+                    <Box>
+                        <Button onClick={onClickEdit}>
+                            <EditIcon />
+                        </Button>
+                        <Button onClick={onClickDelete}>
+                            <DeleteIcon />
+                        </Button>
+                    </Box>
+                );
+            },
+        },
+    ];
 
     const initFilterAndSortTable: FilterAndSortTable = {
         page: 0,
@@ -107,6 +126,7 @@ export default function VehicleList() {
 
     const fetchVehicleList = async (filterAndSortTable: FilterAndSortTable) => {
         updateLoading(true);
+        resetCompletedVehicleEvent();
         const vehiclePage: Page<Vehicle> = await vehicleService.getVehiclesByFilter(
             filterAndSortTable
         );
@@ -120,6 +140,22 @@ export default function VehicleList() {
     useEffect(() => {
         debouncedFetchData(filterAndSortTable);
     }, [location, filterAndSortTable]);
+
+    useEffect(() => {
+        if (
+            isCompletedAddVehicle ||
+            isCompletedEditVehicle ||
+            isCompletedDeleteVehicle
+        ) {
+            debouncedFetchData(filterAndSortTable);
+        }
+    }, [isCompletedAddVehicle, isCompletedEditVehicle, isCompletedDeleteVehicle]);
+
+    const resetCompletedVehicleEvent = () => {
+        updateIsCompletedAddVehicle(false);
+        updateIsCompletedEditVehicle(false);
+        updateIsCompletedDeleteVehicle(false);
+    };
 
     const changePaginationModel = (paginationModel: GridPaginationModel) => {
         setFilterAndSortTable((prev) => ({
