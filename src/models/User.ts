@@ -1,3 +1,5 @@
+import { Role } from "./Role";
+
 export interface User {
     userId: number;
     username: string;
@@ -9,4 +11,5 @@ export interface User {
     phone: string;
     createdAt?: string;
     updatedAt?: string;
+    roles: number[];
 }
