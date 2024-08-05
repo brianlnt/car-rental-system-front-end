@@ -1,7 +1,7 @@
 import { AuthenticatedInfo } from "../models/authenticated-info/AuthenticatedInfo";
 import { TokenInfo } from "../models/authenticated-info/TokenInfo";
 import { UserLoggedInInfo } from "../models/authenticated-info/UserLoggedInInfo";
-import { Role } from "../models/enums/RoleEnum";
+import { RoleEnum } from "../models/enums/RoleEnum";
 
 export class SessionStorageService {
     private TOKEN_KEY: string = "token_info";
@@ -66,10 +66,13 @@ export class SessionStorageService {
         return this.getCurrentUserInfo()?.roles || [];
     };
 
+    isSuperAdmin = (): boolean => {
+        return this.getUserRoles().includes(RoleEnum.SUPERADMIN);
+    };
+
     isAdmin = (): boolean => {
         return (
-            this.getUserRoles().includes(Role.SUPERADMIN) ||
-            this.getUserRoles().includes(Role.ADMIN)
+            this.isSuperAdmin() || this.getUserRoles().includes(RoleEnum.ADMIN)
         );
     };
 

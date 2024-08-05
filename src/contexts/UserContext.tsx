@@ -1,10 +1,12 @@
 import { createContext, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { User } from "../models/User";
+import { Role } from "../models/Role";
 
 type StateType = {
     users: User[];
     totalRows: number;
+    roles: Role[];
     selectedUserId: number;
     isCompletedAddUser: boolean;
     isCompletedEditUser: boolean;
@@ -14,8 +16,9 @@ type StateType = {
 };
 
 const initStateValue: StateType = {
-    users: [] as User[],
+    users: [],
     totalRows: 0,
+    roles: [],
     selectedUserId: 0,
     isCompletedAddUser: false,
     isCompletedEditUser: false,
@@ -26,15 +29,17 @@ const initStateValue: StateType = {
 
 export type ContextType = {
     users: User[];
-    updateUsers: Function;
     totalRows: number;
-    updateTotalRows: Function;
+    roles: Role[];
     selectedUserId: number;
     isCompletedAddUser: boolean;
     isCompletedEditUser: boolean;
     isCompletedDeleteUser: boolean;
     isShowAddUserDialog: boolean;
     isShowUpdateUserDialog: boolean;
+    updateUsers: Function;
+    updateTotalRows: Function;
+    updateRoles: Function;
     updateSelectedUserId: Function;
     updateIsCompletedAddUser: Function;
     updateIsCompletedEditUser: Function;
@@ -47,6 +52,7 @@ const initContextValue = {
     ...initStateValue,
     updateUsers: (users: User[]) => {},
     updateTotalRows: (totalRows: number) => {},
+    updateRoles: (roles: Role[]) => {},
     updateSelectedUserId: (selectedUserId: number) => {},
     updateIsCompletedAddUser: (isCompletedAddUser: boolean) => {},
     updateIsCompletedEditUser: (isCompletedEditUser: boolean) => {},
@@ -66,6 +72,10 @@ export function UsersContextComp() {
 
     const updateTotalRows = (totalRows: number) => {
         setState((prev) => ({ ...prev, totalRows }));
+    };
+
+    const updateRoles = (roles: Role[]) => {
+        setState((prev) => ({ ...prev, roles }));
     };
 
     const updateSelectedUserId = (selectedUserId: number) => {
@@ -97,14 +107,16 @@ export function UsersContextComp() {
             value={{
                 users: state.users,
                 totalRows: state.totalRows,
+                roles: state.roles,
                 selectedUserId: state.selectedUserId,
                 isCompletedAddUser: state.isCompletedAddUser,
                 isCompletedEditUser: state.isCompletedEditUser,
                 isCompletedDeleteUser: state.isCompletedDeleteUser,
                 isShowAddUserDialog: state.isShowAddUserDialog,
                 isShowUpdateUserDialog: state.isShowUpdateUserDialog,
-                updateTotalRows,
                 updateUsers,
+                updateTotalRows,
+                updateRoles,
                 updateSelectedUserId,
                 updateIsCompletedAddUser,
                 updateIsCompletedEditUser,

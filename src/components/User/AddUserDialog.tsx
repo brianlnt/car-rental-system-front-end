@@ -4,6 +4,13 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    FormControl,
+    FormHelperText,
+    InputLabel,
+    ListItemText,
+    MenuItem,
+    OutlinedInput,
+    Select,
     TextField,
 } from "@mui/material";
 import { useContext } from "react";
@@ -17,6 +24,7 @@ import { CustomError } from "../../utils/customError";
 import { User } from "../../models/User";
 import SendIcon from "@mui/icons-material/Send";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { Role } from "../../models/Role";
 
 const validationSchema = Yup.object().shape({
     username: Yup.string().required("Username is required"),
@@ -38,12 +46,16 @@ const validationSchema = Yup.object().shape({
             /^\[\d{3}\]-\d{3}-\d{4}$/,
             "Phone is invalid. Please input with format [xxx]-xxx-xxxx"
         ),
+    role: Yup.array()
+        .min(1, "Select at least one role")
+        .required("Role is required"),
 });
 
 export default function AddUserDialog() {
     const userService = new UserService();
     const { updateLoading, updateNotification } = useContext(GlobalContext);
     const {
+        roles,
         isShowAddUserDialog,
         updateIsShowAddUserDialog,
         updateIsCompletedAddUser,
@@ -67,6 +79,7 @@ export default function AddUserDialog() {
         email: string;
         address: string;
         phone: string;
+        role: number[];
     }): Promise<void> => {
         try {
             updateLoading(true);
@@ -79,6 +92,7 @@ export default function AddUserDialog() {
                 email: data.email,
                 address: data.address,
                 phone: data.phone,
+                roles: data.role,
             };
             await userService.addUser(user);
             updateLoading(false);
@@ -261,6 +275,74 @@ export default function AddUserDialog() {
                                 />
                             )}
                         />
+                        <FormControl fullWidth margin="normal">
+                            <InputLabel
+                                id="role-label"
+                                className={errors.role ? "Mui-error" : ""}
+                            >
+                                Select Roles
+                            </InputLabel>
+                            <Controller
+                                name="role"
+                                control={control}
+                                defaultValue={[] as number[]}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        labelId="role-label"
+                                        input={
+                                            <OutlinedInput
+                                                label="Select Roles"
+                                                className={
+                                                    errors.role
+                                                        ? "Mui-error"
+                                                        : ""
+                                                }
+                                            />
+                                        }
+                                        multiple
+                                        renderValue={(selected: number[]) => {
+                                            let selectedRoleDescription: string[] =
+                                                [];
+                                            selected.forEach((s) => {
+                                                const selectedRole:
+                                                    | Role
+                                                    | undefined = roles.find(
+                                                    (r) => r.roleId === s
+                                                );
+                                                if (selectedRole) {
+                                                    selectedRoleDescription.push(
+                                                        selectedRole.description
+                                                    );
+                                                }
+                                            });
+                                            return selectedRoleDescription.join(
+                                                ", "
+                                            );
+                                        }}
+                                        error={errors.role ? true : false}
+                                    >
+                                        {roles.map((item) => (
+                                            <MenuItem
+                                                key={item.roleId}
+                                                value={item.roleId}
+                                            >
+                                                <ListItemText
+                                                    primary={item.description}
+                                                />
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                )}
+                            />
+                            {errors.role && (
+                                <FormHelperText
+                                    className={errors.role ? "Mui-error" : ""}
+                                >
+                                    {errors.role.message}
+                                </FormHelperText>
+                            )}
+                        </FormControl>
                     </div>
                 </DialogContent>
                 <DialogActions>

@@ -8,13 +8,23 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import UserList from "../../components/User/UserList";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { UserContext } from "../../contexts/UserContext";
 import AddUserDialog from "../../components/User/AddUserDialog";
 import EditUserDialog from "../../components/User/EditUserDialog";
+import { RoleService } from "../../services/role/roleService";
+import { Role } from "../../models/Role";
+import { GlobalContext } from "../../contexts/GlobalContext";
+import { SessionStorageService } from "../../services/sessionStorageService";
+import { RoleEnum } from "../../models/enums/RoleEnum";
 
 export default function UserPage() {
+    const sessionStorageService = new SessionStorageService();
+    const roleService = new RoleService();
+    const { updateLoading } = useContext(GlobalContext);
     const {
+        roles,
+        updateRoles,
         isShowAddUserDialog,
         updateIsShowAddUserDialog,
         isShowUpdateUserDialog,
@@ -23,6 +33,29 @@ export default function UserPage() {
     const showAddUserDialog = () => {
         updateIsShowAddUserDialog(true);
     };
+
+    const fetchRoles = async () => {
+        updateLoading(true);
+        let roles: Role[] = await roleService.getAllRoles();
+        if (sessionStorageService.isAdmin()) {
+            if (!sessionStorageService.isSuperAdmin()) {
+                roles = roles.filter((r) => r.roleName !== RoleEnum.SUPERADMIN);
+            }
+        } else {
+            roles = roles.filter(
+                (r) =>
+                    ![RoleEnum.ADMIN, RoleEnum.SUPERADMIN].includes(
+                        r.roleName as RoleEnum
+                    )
+            );
+        }
+        updateRoles(roles);
+        updateLoading(false);
+    };
+
+    useEffect(() => {
+        fetchRoles();
+    }, []);
 
     return (
         <Container maxWidth="xl">
