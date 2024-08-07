@@ -60,7 +60,6 @@ export default function VehicleCardList () {
         });
     };
 
-
     const handleCheckBox = (event: React.ChangeEvent<HTMLInputElement>) => {
         if(event.target.checked){
             const { field, value, operator } = JSON.parse(event.target.value);
@@ -84,6 +83,23 @@ export default function VehicleCardList () {
                 items: filterModel.items,
             },
         });
+    };
+
+    const [page, setPage] = React.useState(2);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+    const handleChangePage = (
+        event: React.MouseEvent<HTMLButtonElement> | null,
+        newPage: number,
+    ) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (
+        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    ) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
     };
 
     return (
@@ -228,6 +244,16 @@ export default function VehicleCardList () {
                     </ListItem>
                 ))}
             </List>
+                
+            {/* Pagination Controls */}
+            <TablePagination
+                component="div"
+                count={vehicles.length}
+                page={page}
+                onPageChange={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+            />
                 
         </Card>
         </Grid>
