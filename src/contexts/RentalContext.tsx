@@ -29,7 +29,7 @@ const initStateValue = {
         page: 0,
         pageSize: 10,
         sortModels: [] as GridSortItem[],
-        filterModel: { items: [] as GridFilterItem[]},
+        filterModel: { items: [{field: "availableStatus", value: "available", operator: "contains"}] as GridFilterItem[]},
     }
 };
 

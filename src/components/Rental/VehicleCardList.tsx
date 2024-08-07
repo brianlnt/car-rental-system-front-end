@@ -16,6 +16,7 @@ import {
     FormControlLabel,
     Checkbox,
     CardHeader,
+    Pagination,
 } from "@mui/material";
 import { Vehicle } from "../../models/Vehicle";
 import { RentalContext } from "../../contexts/RentalContext";
@@ -23,7 +24,7 @@ import { FilterAndSortTable } from "../../models/FilterAndSortTable";
 import { GlobalContext } from "../../contexts/GlobalContext";
 import { Page } from "../../models/Page";
 import { VehicleService } from "../../services/vehicle/vehicleService";
-import { GridFilterItem, GridFilterModel, GridSortDirection, GridSortItem } from "@mui/x-data-grid";
+import { GridFilterItem, GridFilterModel, GridPaginationModel, GridSortDirection, GridSortItem } from "@mui/x-data-grid";
 
 export default function VehicleCardList () {
     const { updateLoading } = useContext(GlobalContext);
@@ -85,21 +86,17 @@ export default function VehicleCardList () {
         });
     };
 
-    const [page, setPage] = React.useState(2);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const handleChange = (event: React.ChangeEvent<unknown>, page: number) => {
+        const paginationModel = {page: page-1, pageSize: 10}
+        changePaginationModel(paginationModel);
+    }
 
-    const handleChangePage = (
-        event: React.MouseEvent<HTMLButtonElement> | null,
-        newPage: number,
-    ) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (
-        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    ) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
+    const changePaginationModel = (paginationModel: GridPaginationModel) => {
+        updateFilterAndSortTable({
+            ...filterAndSortTable,
+            page: paginationModel.page,
+            pageSize: paginationModel.pageSize,
+        });
     };
 
     return (
@@ -246,15 +243,13 @@ export default function VehicleCardList () {
             </List>
                 
             {/* Pagination Controls */}
-            <TablePagination
-                component="div"
-                count={vehicles.length}
-                page={page}
-                onPageChange={handleChangePage}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-                
+              <Pagination 
+                sx={{display:"flex", justifyContent:"center"}}
+                count={10} 
+                variant="outlined" 
+                shape="rounded" 
+                onChange={handleChange}
+              />  
         </Card>
         </Grid>
         </Grid>
