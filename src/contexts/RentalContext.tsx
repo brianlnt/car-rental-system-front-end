@@ -1,108 +1,134 @@
-import React, { createContext, ReactNode, useState, useEffect } from "react";
+import { createContext, useState } from "react";
 import { Outlet } from "react-router-dom";
+import { Vehicle } from "../models/Vehicle";
+import { FilterAndSortTable } from "../models/FilterAndSortTable";
+import { GridFilterItem, GridSortItem } from "@mui/x-data-grid";
 
-// Define types for rental context state
-interface Rental {
-    id: number;
-    vehicleId: number;
-    userId: number;
-    startDate: string;
-    endDate: string;
-}
-
-interface Vehicle {
-    id: number;
-    make: string;
-    model: string;
-    year: number;
-    available: boolean;
-    pricePerDay: number;
-}
-
-interface RentalContextType {
+type StateType = {
     vehicles: Vehicle[];
-    reservations: Rental[];
-    searchQuery: string;
-    filters: { [key: string]: any };
-    sortBy: string;
-    searchVehicles: (query: string) => void;
-    setFilters: (filters: { [key: string]: any }) => void;
-    setSortBy: (sortBy: string) => void;
-    makeReservation: (vehicleId: number, userId: number, startDate: string, endDate: string) => void;
-    cancelReservation: (reservationId: number) => void;
-}
+    totalRows: number;
+    selectedVehicleId: number;
+    isCompletedAddVehicle: boolean;
+    isCompletedEditVehicle: boolean;
+    isCompletedDeleteVehicle: boolean;
+    isShowAddVehicleDialog: boolean;
+    isShowUpdateVehicleDialog: boolean;
+    filterAndSortTable: FilterAndSortTable;
+};
 
-export const RentalContext = createContext<RentalContextType>({
-    vehicles: [],
-    reservations: [],
-    searchQuery: "",
-    filters: {},
-    sortBy: "",
-    searchVehicles: () => {},
-    setFilters: () => {},
-    setSortBy: () => {},
-    makeReservation: () => {},
-    cancelReservation: () => {},
-});
+const initStateValue = {
+    vehicles: [] as Vehicle[],
+    totalRows: 0,
+    selectedVehicleId: 0,
+    isCompletedAddVehicle: false,
+    isCompletedEditVehicle: false,
+    isCompletedDeleteVehicle: false,
+    isShowAddVehicleDialog: false,
+    isShowUpdateVehicleDialog: false,
+    filterAndSortTable: {
+        page: 0,
+        pageSize: 10,
+        sortModels: [] as GridSortItem[],
+        filterModel: { items: [] as GridFilterItem[]},
+    }
+};
+
+export type ContextType = {
+    vehicles: Vehicle[];
+    totalRows: number;
+    updateVehicles: Function;
+    updateTotalRows: Function;
+    selectedVehicleId: number;
+    isCompletedAddVehicle: boolean;
+    isCompletedEditVehicle: boolean;
+    isCompletedDeleteVehicle: boolean;
+    isShowAddVehicleDialog: boolean;
+    isShowUpdateVehicleDialog: boolean;
+    updateSelectedVehicleId: Function;
+    updateIsCompletedAddVehicle: Function;
+    updateIsCompletedEditVehicle: Function;
+    updateIsCompletedDeleteVehicle: Function;
+    updateIsShowAddVehicleDialog: Function;
+    updateIsShowUpdateVehicleDialog: Function;
+    filterAndSortTable: FilterAndSortTable;
+    updateFilterAndSortTable: Function;
+};
+
+const initContextValue = {
+    ...initStateValue,
+    updateVehicles: (vehicles: Vehicle[]) => {},
+    updateTotalRows: (totalRows: number) => {},
+    updateSelectedVehicleId: (selectedVehicleId: number) => {},
+    updateIsCompletedAddVehicle: (isCompletedAddVehicle: boolean) => {},
+    updateIsCompletedEditVehicle: (isCompletedEditVehicle: boolean) => {},
+    updateIsCompletedDeleteVehicle: (isCompletedDeleteVehicle: boolean) => {},
+    updateIsShowAddVehicleDialog: (isShowAddVehicleDialog: boolean) => {},
+    updateIsShowUpdateVehicleDialog: (isShowUpdateVehicleDialog: boolean) => {},
+    updateFilterAndSortTable: (filterAndSortTable: FilterAndSortTable) => {}
+};
+
+export const RentalContext = createContext(initContextValue);
 
 export function RentalsContextComp() {
-    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-    const [reservations, setReservations] = useState<Rental[]>([]);
-    const [searchQuery, setSearchQuery] = useState<string>("");
-    const [filters, setFilters] = useState<{ [key: string]: any }>({});
-    const [sortBy, setSortBy] = useState<string>("");
+    const [state, setState] = useState<StateType>(initStateValue);
 
-    // Fetch available vehicles (placeholder function)
-    useEffect(() => {
-        // Simulate API call to fetch vehicles
-        const fetchVehicles = async () => {
-            // Simulated data
-            const data: Vehicle[] = [
-                { id: 1, make: "Toyota", model: "Camry", year: 2020, available: true, pricePerDay: 50 },
-                { id: 2, make: "Honda", model: "Accord", year: 2019, available: true, pricePerDay: 45 },
-                // Add more vehicles
-            ];
-            setVehicles(data);
-        };
-        fetchVehicles();
-    }, []);
-
-    const searchVehicles = (query: string) => {
-        setSearchQuery(query);
-        // Implement search logic here
+    const updateVehicles = (vehicles: Vehicle[]) => {
+        setState((prev) => ({ ...prev, vehicles }));
     };
 
-    const makeReservation = (vehicleId: number, userId: number, startDate: string, endDate: string) => {
-        // Implement reservation logic here
-        const newReservation: Rental = {
-            id: Date.now(),
-            vehicleId,
-            userId,
-            startDate,
-            endDate,
-        };
-        setReservations([...reservations, newReservation]);
+    const updateTotalRows = (totalRows: number) => {
+        setState((prev) => ({ ...prev, totalRows }));
     };
 
-    const cancelReservation = (reservationId: number) => {
-        setReservations(reservations.filter((reservation) => reservation.id !== reservationId));
+    const updateSelectedVehicleId = (selectedVehicleId: number) => {
+        setState((prev) => ({ ...prev, selectedVehicleId }));
+    };
+
+    const updateIsCompletedAddVehicle = (isCompletedAddVehicle: boolean) => {
+        setState((prev) => ({ ...prev, isCompletedAddVehicle }));
+    };
+
+    const updateIsCompletedEditVehicle = (isCompletedEditVehicle: boolean) => {
+        setState((prev) => ({ ...prev, isCompletedEditVehicle }));
+    };
+
+    const updateIsCompletedDeleteVehicle = (isCompletedDeleteVehicle: boolean) => {
+        setState((prev) => ({ ...prev, isCompletedDeleteVehicle }));
+    };
+
+    const updateIsShowAddVehicleDialog = (isShowAddVehicleDialog: boolean) => {
+        setState((prev) => ({ ...prev, isShowAddVehicleDialog }));
+    };
+
+    const updateIsShowUpdateVehicleDialog = (isShowUpdateVehicleDialog: boolean) => {
+        setState((prev) => ({ ...prev, isShowUpdateVehicleDialog }));
+    };
+
+    const updateFilterAndSortTable = (filterAndSortTable: FilterAndSortTable) => {
+        setState((prev) => ({ ...prev, filterAndSortTable }));
     };
 
     return (
-        <RentalContext.Provider
-            value={{
-                vehicles,
-                reservations,
-                searchQuery,
-                filters,
-                sortBy,
-                searchVehicles,
-                setFilters,
-                setSortBy,
-                makeReservation,
-                cancelReservation,
-            }}
-        >
+        <RentalContext.Provider value={{
+                vehicles: state.vehicles,
+                totalRows: state.totalRows,
+                selectedVehicleId: state.selectedVehicleId,
+                isCompletedAddVehicle: state.isCompletedAddVehicle,
+                isCompletedEditVehicle: state.isCompletedEditVehicle,
+                isCompletedDeleteVehicle: state.isCompletedDeleteVehicle,
+                isShowAddVehicleDialog: state.isShowAddVehicleDialog,
+                isShowUpdateVehicleDialog: state.isShowUpdateVehicleDialog,
+                updateTotalRows,
+                updateVehicles,
+                updateSelectedVehicleId,
+                updateIsCompletedAddVehicle,
+                updateIsCompletedEditVehicle,
+                updateIsCompletedDeleteVehicle,
+                updateIsShowAddVehicleDialog,
+                updateIsShowUpdateVehicleDialog,
+                filterAndSortTable: state.filterAndSortTable,
+                updateFilterAndSortTable,
+        }}>
             <Outlet />
         </RentalContext.Provider>
     );
