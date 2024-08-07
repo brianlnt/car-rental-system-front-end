@@ -60,6 +60,32 @@ export default function VehicleCardList () {
         });
     };
 
+
+    const handleCheckBox = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if(event.target.checked){
+            const { field, value, operator } = JSON.parse(event.target.value);
+            const filterModel: GridFilterModel = {items: [{field: field, value: value, operator: operator}]}
+            console.log(filterModel)
+            changeFilterModel(filterModel);
+        } else {
+            updateFilterAndSortTable( {
+                page: 0,
+                pageSize: 10,
+                sortModels: [] as GridSortItem[],
+                filterModel: { items: [] as GridFilterItem[]},
+            })
+        }
+    };
+
+    const changeFilterModel = (filterModel: GridFilterModel) => {
+        updateFilterAndSortTable({
+            ...filterAndSortTable,
+            filterModel: {
+                items: filterModel.items,
+            },
+        });
+    };
+
     return (
         <>
         <Grid container spacing={2}>
@@ -82,7 +108,7 @@ export default function VehicleCardList () {
             <Divider />
             <Typography variant="h6" sx={{ mt: 2 }}>MAKE</Typography>
             <Box>
-                {/* <FormControlLabel
+                <FormControlLabel
                     control={<Checkbox value={JSON.stringify({ field: "make", value: "honda", operator: "contains" })} onChange={handleCheckBox}/>}
                     label="Honda"
                 />
@@ -97,7 +123,7 @@ export default function VehicleCardList () {
                 <FormControlLabel
                     control={<Checkbox value={JSON.stringify({ field: "make", value: "mazda", operator: "contains" })} onChange={handleCheckBox}/>}
                     label="Mazda"
-                /> */}
+                />
             </Box>
             <Divider />
             <Typography variant="h6" sx={{ mt: 2 }}>FUEL TYPE</Typography>
