@@ -24,6 +24,7 @@ import { GlobalContext } from "../../contexts/GlobalContext";
 import { Page } from "../../models/Page";
 import { VehicleService } from "../../services/vehicle/vehicleService";
 import { GridFilterItem, GridFilterModel, GridPaginationModel, GridSortDirection, GridSortItem } from "@mui/x-data-grid";
+import { useNavigate } from "react-router-dom";
 
 export default function VehicleCardList () {
     const { updateLoading } = useContext(GlobalContext);
@@ -95,6 +96,12 @@ export default function VehicleCardList () {
             page: paginationModel.page,
             pageSize: paginationModel.pageSize,
         });
+    };
+
+    const navigate = useNavigate();
+
+    const handleSelectVehicle = (vehicle: Vehicle) => {
+        navigate("/reservation", { state: { selectedVehicle: vehicle } });
     };
 
     return (
@@ -219,7 +226,7 @@ export default function VehicleCardList () {
                                 <Typography variant="h6">{vehicle.make} {vehicle.model}</Typography>
                                 <Typography variant="body2" color="textSecondary">{vehicle.year}</Typography>
                                 <Typography variant="body2" color="textSecondary">Automatic | 5 People | 3 Bags</Typography>
-                                <Button variant="text" color="success" sx={{ mt: 1, fontWeight: 'bold' }}>Features & Price Details</Button>
+                                <Button variant="text" color="primary" sx={{ mt: 1, fontWeight: 'bold' }}>Features & Price Details</Button>
                             </Box>
                         </Box>
                         <Box sx={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
@@ -234,7 +241,7 @@ export default function VehicleCardList () {
                                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>Total</Typography>
                                 </Box>
                             </Box>
-                            <Button variant="contained" color="success" sx={{ fontWeight: 'bold', bgcolor: '#2f5e2f', '&:hover': { bgcolor: '#276b27' } }} onClick={() => {}}>Select</Button>
+                            <Button variant="contained" color="primary" sx={{ fontWeight: 'bold'}} onClick={() => handleSelectVehicle(vehicle)}>Select</Button>
                         </Box>
                     </ListItem>
                 ))}
