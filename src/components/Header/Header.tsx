@@ -59,7 +59,7 @@ export default function Header() {
     const currentUser: UserLoggedInInfo | null =
         sessionStorageService.getCurrentUserInfo();
 
-    let pages: Page[] = [{ id: 1, name: "Rentals", path: "/rentals" }];
+    let pages: Page[] = [{ id: 1, name: "Rentals", path: "/rentals" }, { id: 1, name: "Reservation", path: "/reservation" }];
     if (isAdmin) {
         pages = [
             { id: 1, name: "Dashboards", path: "/dashboards" },
