@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import {
     Card,
     Divider,
@@ -11,7 +11,6 @@ import {
     Typography,
     Grid,
     Box,
-    TablePagination,
     SelectChangeEvent,
     FormControlLabel,
     Checkbox,
@@ -29,7 +28,6 @@ import { GridFilterItem, GridFilterModel, GridPaginationModel, GridSortDirection
 export default function VehicleCardList () {
     const { updateLoading } = useContext(GlobalContext);
     const { vehicles, 
-            totalRows,
             updateVehicles,
             updateTotalRows,
             filterAndSortTable,
@@ -216,7 +214,7 @@ export default function VehicleCardList () {
                 {vehicles?.map((vehicle) => (
                     <ListItem key={vehicle.vehicleId} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #ddd', borderRadius: '8px', mb: 2, p: 2, bgcolor: '#f9f9f9' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <img src={`path/to/image/${vehicle.vehicleId}.jpg`} alt={`${vehicle.make} ${vehicle.model}`} style={{ width: '150px', height: 'auto', marginRight: '16px', borderRadius: '8px' }} />
+                            <img src={`${vehicle.image}.jpg`} alt={`${vehicle.make} ${vehicle.model}`} style={{ width: '150px', height: 'auto', marginRight: '16px', borderRadius: '8px' }} />
                             <Box>
                                 <Typography variant="h6">{vehicle.make} {vehicle.model}</Typography>
                                 <Typography variant="body2" color="textSecondary">{vehicle.year}</Typography>
