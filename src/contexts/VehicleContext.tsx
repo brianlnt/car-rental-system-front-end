@@ -11,6 +11,7 @@ type StateType = {
     isCompletedDeleteVehicle: boolean;
     isShowAddVehicleDialog: boolean;
     isShowUpdateVehicleDialog: boolean;
+    isShowDeleteVehicleDialog: boolean;
 };
 
 const initStateValue = {
@@ -22,6 +23,7 @@ const initStateValue = {
     isCompletedDeleteVehicle: false,
     isShowAddVehicleDialog: false,
     isShowUpdateVehicleDialog: false,
+    isShowDeleteVehicleDialog: false,
 };
 
 export type ContextType = {
@@ -41,6 +43,7 @@ export type ContextType = {
     updateIsCompletedDeleteVehicle: Function;
     updateIsShowAddVehicleDialog: Function;
     updateIsShowUpdateVehicleDialog: Function;
+    updateIsShowDeleteVehicleDialog: Function;
 };
 
 const initContextValue = {
@@ -53,6 +56,7 @@ const initContextValue = {
     updateIsCompletedDeleteVehicle: (isCompletedDeleteVehicle: boolean) => {},
     updateIsShowAddVehicleDialog: (isShowAddVehicleDialog: boolean) => {},
     updateIsShowUpdateVehicleDialog: (isShowUpdateVehicleDialog: boolean) => {},
+    updateIsShowDeleteVehicleDialog: (isShowDeleteVehicleDialog: boolean) => {}
 };
 
 export const VehicleContext = createContext(initContextValue);
@@ -92,6 +96,10 @@ export function VehiclesContextComp() {
         setState((prev) => ({ ...prev, isShowUpdateVehicleDialog }));
     };
 
+    const updateIsShowDeleteVehicleDialog = (isShowDeleteVehicleDialog: boolean) => {
+        setState((prev) => ({ ...prev, isShowDeleteVehicleDialog }));
+    };
+
     return (
         <VehicleContext.Provider value={{
                 vehicles: state.vehicles,
@@ -102,6 +110,7 @@ export function VehiclesContextComp() {
                 isCompletedDeleteVehicle: state.isCompletedDeleteVehicle,
                 isShowAddVehicleDialog: state.isShowAddVehicleDialog,
                 isShowUpdateVehicleDialog: state.isShowUpdateVehicleDialog,
+                isShowDeleteVehicleDialog: state.isShowDeleteVehicleDialog,
                 updateTotalRows,
                 updateVehicles,
                 updateSelectedVehicleId,
@@ -110,6 +119,7 @@ export function VehiclesContextComp() {
                 updateIsCompletedDeleteVehicle,
                 updateIsShowAddVehicleDialog,
                 updateIsShowUpdateVehicleDialog,
+                updateIsShowDeleteVehicleDialog
         }}>
             <Outlet />
         </VehicleContext.Provider>

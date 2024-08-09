@@ -5,6 +5,7 @@ import AddVehicleDialog from "../../components/Vehicle/AddVehicleDialog";
 import { VehicleContext } from "../../contexts/VehicleContext";
 import { useContext } from "react";
 import EditVehicleDialog from "../../components/Vehicle/EditVehicleDialog";
+import DeleteVehicleDialog from "../../components/Vehicle/DeleteVehicleDialog";
 
 const VehiclePage: React.FC = () => {
 
@@ -12,6 +13,7 @@ const VehiclePage: React.FC = () => {
         isShowAddVehicleDialog,
         updateIsShowAddVehicleDialog,
         isShowUpdateVehicleDialog,
+        isShowDeleteVehicleDialog
     } = useContext(VehicleContext);
 
     const showAddVehicleDialog = () => {
@@ -46,6 +48,7 @@ const VehiclePage: React.FC = () => {
             </Card>
             {isShowAddVehicleDialog && <AddVehicleDialog />}
             {isShowUpdateVehicleDialog && <EditVehicleDialog />}
+            {isShowDeleteVehicleDialog && <DeleteVehicleDialog />}
         </Container>
   );
 };
