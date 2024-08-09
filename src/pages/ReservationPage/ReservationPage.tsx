@@ -1,10 +1,10 @@
 import { Container } from "@mui/material";
-import ReservationComponent from "../../components/Reservation/ReservationComponent";
+import ReservationConfirm from "../../components/Reservation/ReservationConfirm";
 
 export default function ReservationPage() {
     return (
         <Container maxWidth="xl" sx={{ mt: 4 }}>
-            <ReservationComponent/>
+            <ReservationConfirm/>
         </Container>
     );
 }
