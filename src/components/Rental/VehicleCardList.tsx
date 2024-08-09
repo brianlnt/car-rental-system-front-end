@@ -101,7 +101,7 @@ export default function VehicleCardList () {
     const navigate = useNavigate();
 
     const handleSelectVehicle = (vehicle: Vehicle) => {
-        navigate("/reservation", { state: { selectedVehicle: vehicle } });
+        navigate("/confirm", { state: { selectedVehicle: vehicle } });
     };
 
     return (
