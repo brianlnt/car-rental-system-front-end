@@ -47,6 +47,7 @@ export default function ReservationConfirm() {
         isShowReservationManagement,
         updateIsShowReservationManagement,
     } = useContext(ReservationContext);
+    const [reservation, setReservation] = useState<Reservation | null>(null);
 
     // State for payment information
     // const [cardNumber, setCardNumber] = useState<string>('');
@@ -76,7 +77,8 @@ export default function ReservationConfirm() {
                 effectiveDate: data.effectiveDate,
                 expirationDate: data.expirationDate,
             };
-            await reservationService.addReservation(reservation);
+            const addedReservation = await reservationService.addReservation(reservation);
+            setReservation(addedReservation);
             updateLoading(false);
             updateIsShowAddReservationDialog(false);
             updateIsCompletedAddReservation(true);
@@ -96,7 +98,7 @@ export default function ReservationConfirm() {
         }
     };
 
-    if(isShowReservationManagement) return <ReservationManagement/>;
+    if(isShowReservationManagement) return <ReservationManagement reservation = {reservation}/>;
 
     return (
         <Container maxWidth="lg" sx={{ mt: 4 }}>
