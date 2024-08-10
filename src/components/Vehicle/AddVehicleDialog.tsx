@@ -4,7 +4,12 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
     TextField,
+    Typography,
 } from "@mui/material";
 import { useContext } from "react";
 import * as Yup from "yup";
@@ -17,6 +22,7 @@ import { CustomError } from "../../utils/customError";
 import { Vehicle } from "../../models/Vehicle";
 import SendIcon from "@mui/icons-material/Send";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { read } from "fs";
 
 const validationSchema = Yup.object().shape({
     make: Yup.string().required("Make is required"),
@@ -24,7 +30,8 @@ const validationSchema = Yup.object().shape({
     year: Yup.string().required("Year is required"),
     licensePlateNumber: Yup.string().required("License Plate Number is required"),
     rentalPrice: Yup.number().required("Rental Price is required"),
-    availableStatus: Yup.string().required("Availability is required")
+    availableStatus: Yup.string().required("Availability is required"),
+    image: Yup.string().required(),
 });
 
 export default function AddVehicleDialog() {
@@ -45,6 +52,18 @@ export default function AddVehicleDialog() {
         resolver: yupResolver(validationSchema),
     });
 
+    const handleImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files;
+        if(file){
+            const reader = new FileReader();
+            reader.readAsDataURL(file[0]);
+            reader.onloadend = () => {
+                console.log(reader.result);
+            };
+        }
+        
+    }
+
     const onSubmit = async (data: {
         make: string;
         model: string;
@@ -52,6 +71,7 @@ export default function AddVehicleDialog() {
         licensePlateNumber: string;
         rentalPrice: number;
         availableStatus: string;
+        image: string;
     }): Promise<void> => {
         try {
             updateLoading(true);
@@ -63,6 +83,7 @@ export default function AddVehicleDialog() {
                 licensePlateNumber: data.licensePlateNumber,
                 rentalPrice: data.rentalPrice,
                 availableStatus: data.availableStatus,
+                image: data.image
             };
             await vehicleService.addVehicle(vehicle);
             updateLoading(false);
@@ -202,15 +223,44 @@ export default function AddVehicleDialog() {
                             control={control}
                             defaultValue="available"
                             render={({ field }) => (
-                                <TextField
-                                    {...field}
-                                    required
-                                    fullWidth
-                                    label="Availability Status"
-                                    placeholder="Enter availability status"
-                                    error={errors.availableStatus ? true : false}
-                                    helperText={errors.availableStatus?.message}
-                                />
+                                <FormControl fullWidth error={errors.availableStatus ? true : false}>
+                                    <InputLabel id="availability-status-label">Availability Status</InputLabel>
+                                    <Select
+                                        {...field}
+                                        labelId="availability-status-label"
+                                        label="Availability Status"
+                                    >
+                                        <MenuItem value="available">Available</MenuItem>
+                                        <MenuItem value="rented">Rented</MenuItem>
+                                        <MenuItem value="under maintainance">Under Maintainance</MenuItem>
+                                    </Select>
+                                    {errors.availableStatus && (
+                                        <p style={{ color: 'red' }}>{errors.availableStatus.message}</p>
+                                    )}
+                                </FormControl>
+                            )}
+                        />
+
+                        <Controller
+                            name="image"
+                            control={control}
+                            defaultValue=""
+                            render={({ field }) => (
+                                <FormControl fullWidth error={errors.image ? true : false} sx={{  mt: 2 }}>
+                                    <Typography variant="subtitle1" gutterBottom>Image</Typography>
+                                    <input
+                                        {...field}
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            handleImage(e);
+                                            field.onChange(e);
+                                        }}
+                                    />
+                                    {errors.image && (
+                                        <p style={{ color: 'red' }}>{errors.image.message}</p>
+                                    )}
+                                </FormControl>
                             )}
                         />
                     </div>

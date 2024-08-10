@@ -12,6 +12,9 @@ import { UsersContextComp } from "../contexts/UserContext";
 import { VehiclesContextComp } from "../contexts/VehicleContext";
 import { RentalsContextComp } from "../contexts/RentalContext";
 import RentalPage from "../pages/RentalPage/RentalPage";
+import ReservationPage from "../pages/ReservationPage/ReservationPage";
+import { ReservationContextComp } from "../contexts/ReservationContext";
+import MyReservation from "../components/Reservation/MyReservation";
 
 export default function AppRoutes() {
     const sessionStorageService = new SessionStorageService();
@@ -81,6 +84,31 @@ export default function AppRoutes() {
                                 }
                             />
                         </Route>
+                        <Route element={<ReservationContextComp />}>
+                            <Route
+                                path="/confirm"
+                                element={
+                                    !isAdmin ? (
+                                        <ReservationPage />
+                                    ) : (
+                                        <Navigate to="/dashboards" />
+                                    )
+                                }
+                            />
+                        </Route>
+                        <Route element={<ReservationContextComp />}>
+                            <Route
+                                path="/reservations"
+                                element={
+                                    !isAdmin ? (
+                                        <MyReservation />
+                                    ) : (
+                                        <Navigate to="/dashboards" />
+                                    )
+                                }
+                            />
+                        </Route>
+
                         <Route path="*" element={<ErrorPage />} />
                     </Routes>
                 </AuthorizedLayout>

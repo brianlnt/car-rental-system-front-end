@@ -1,6 +1,6 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import {
     DataGrid,
     GridColDef,
@@ -17,8 +17,7 @@ import { Vehicle } from '../../models/Vehicle';
 import { FilterAndSortTable } from "../../models/FilterAndSortTable";
 import { Page } from "../../models/Page";
 import { VehicleService } from "../../services/vehicle/vehicleService";
-
-
+import DeleteVehicleDialog from "./DeleteVehicleDialog";
 
 export default function VehicleList() {
     const location = useLocation();
@@ -30,6 +29,7 @@ export default function VehicleList() {
         isCompletedAddVehicle,
         isCompletedEditVehicle,
         isCompletedDeleteVehicle,
+        selectedVehicleId,
         updateVehicles,
         updateTotalRows,
         updateSelectedVehicleId,
@@ -37,7 +37,10 @@ export default function VehicleList() {
         updateIsCompletedEditVehicle,
         updateIsCompletedDeleteVehicle,
         updateIsShowUpdateVehicleDialog,
+        updateIsShowDeleteVehicleDialog,
     } = useContext(VehicleContext);
+
+    const [openModal, setOpenModal] = useState(false);
 
     const columns: GridColDef<Vehicle>[] = [
         {
@@ -94,11 +97,9 @@ export default function VehicleList() {
                     updateIsShowUpdateVehicleDialog(true);
                 };
     
-                const onClickDelete = async () => {
-                    updateLoading(true);
-                    await vehicleService.deleteVehicleById(params.row.vehicleId);
-                    updateIsCompletedDeleteVehicle(true);
-                    updateLoading(false);
+                const onClickDelete = () => {
+                    updateSelectedVehicleId(params.row.vehicleId);
+                    updateIsShowDeleteVehicleDialog(true);
                 };
     
                 return (

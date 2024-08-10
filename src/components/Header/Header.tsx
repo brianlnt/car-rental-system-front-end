@@ -14,7 +14,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Header.css";
 import { SessionStorageService } from "../../services/sessionStorageService";
 import { UserLoggedInInfo } from "../../models/authenticated-info/UserLoggedInInfo";
@@ -58,8 +58,9 @@ export default function Header() {
     const isAdmin: boolean = sessionStorageService.isAdmin();
     const currentUser: UserLoggedInInfo | null =
         sessionStorageService.getCurrentUserInfo();
+    const navigate = useNavigate();
 
-    let pages: Page[] = [{ id: 1, name: "Rentals", path: "/rentals" }];
+    let pages: Page[] = [{ id: 1, name: "Rentals", path: "/rentals" }, { id: 1, name: "Reservation", path: "/reservations" }];
     if (isAdmin) {
         pages = [
             { id: 1, name: "Dashboards", path: "/dashboards" },
@@ -93,6 +94,7 @@ export default function Header() {
 
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
+        // navigate('/reservations'); 
     };
 
     const handleCloseUserMenu = () => {

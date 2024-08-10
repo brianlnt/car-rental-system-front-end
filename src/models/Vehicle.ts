@@ -6,4 +6,5 @@ export interface Vehicle {
   licensePlateNumber: string;
   rentalPrice: number;
   availableStatus: string;
+  image: string;
 }
