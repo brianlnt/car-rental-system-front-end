@@ -150,7 +150,7 @@ export default function DashboardAdmin() {
                 data: [
                     vehicles.filter(vehicle => vehicle.availableStatus === "available").length,
                     vehicles.filter(vehicle => vehicle.availableStatus === "rented").length,
-                    vehicles.filter(vehicle => vehicle.availableStatus === "maintenance").length,
+                    vehicles.filter(vehicle => vehicle.availableStatus === "under maintenance").length,
                 ],
                 backgroundColor: ["#4CAF50", "#FF9800", "#F44336"],
                 hoverBackgroundColor: ["#66BB6A", "#FFB74D", "#E57373"],

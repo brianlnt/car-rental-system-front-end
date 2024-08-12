@@ -21,6 +21,7 @@ import { ReservationService } from '../../services/reservation/reservationServic
 import { GlobalContext } from '../../contexts/GlobalContext';
 import { Reservation } from '../../models/reservation';
 import { CustomError } from '../../utils/customError';
+import { SessionStorageService } from '../../services/sessionStorageService';
 
 
 export default function MyReservation() {
@@ -29,16 +30,18 @@ export default function MyReservation() {
     const [selectedReservationId, setSelectedReservationId] = useState<number | null>(null);
     const reservationService = new ReservationService();
     const { updateLoading, updateNotification } = useContext(GlobalContext);
+    const sessionStorageService = new SessionStorageService();
+    const user = sessionStorageService.getCurrentUserInfo();
 
-    const fetchReservation = async () => {
+    const fetchReservation = async (id: number | undefined) => {
         updateLoading(true);
-        const reservations = await reservationService.getAllReservations();
+        const reservations = await reservationService.getReservationById(id);
         setReservations(reservations);
         updateLoading(false);
     }
 
     useEffect(() => {
-        fetchReservation();
+            fetchReservation(user?.id);
     }, []);
 
     const handleDelete = async (id: number) => {
@@ -50,7 +53,7 @@ export default function MyReservation() {
                 status: "success",
                 message: "Delete reservation successfully",
             });
-            fetchReservation();
+                fetchReservation(user?.id);
         } catch (error) {
             updateLoading(false);
             updateNotification({
