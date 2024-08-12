@@ -1,6 +1,14 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+} from "@mui/material";
 import {
     DataGrid,
     GridColDef,
@@ -13,11 +21,10 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { GlobalContext } from "../../contexts/GlobalContext";
 import { VehicleContext } from "../../contexts/VehicleContext";
-import { Vehicle } from '../../models/Vehicle';
+import { Vehicle } from "../../models/Vehicle";
 import { FilterAndSortTable } from "../../models/FilterAndSortTable";
 import { Page } from "../../models/Page";
 import { VehicleService } from "../../services/vehicle/vehicleService";
-import DeleteVehicleDialog from "./DeleteVehicleDialog";
 
 export default function VehicleList() {
     const location = useLocation();
@@ -96,12 +103,12 @@ export default function VehicleList() {
                     updateSelectedVehicleId(params.row.vehicleId || 0);
                     updateIsShowUpdateVehicleDialog(true);
                 };
-    
+
                 const onClickDelete = () => {
                     updateSelectedVehicleId(params.row.vehicleId);
                     updateIsShowDeleteVehicleDialog(true);
                 };
-    
+
                 return (
                     <Box>
                         <Button onClick={onClickEdit}>
@@ -123,14 +130,14 @@ export default function VehicleList() {
         filterModel: { items: [] },
     };
 
-    const [filterAndSortTable, setFilterAndSortTable] = useState<FilterAndSortTable>(initFilterAndSortTable);
+    const [filterAndSortTable, setFilterAndSortTable] =
+        useState<FilterAndSortTable>(initFilterAndSortTable);
 
     const fetchVehicleList = async (filterAndSortTable: FilterAndSortTable) => {
         updateLoading(true);
         resetCompletedVehicleEvent();
-        const vehiclePage: Page<Vehicle> = await vehicleService.getVehiclesByFilter(
-            filterAndSortTable
-        );
+        const vehiclePage: Page<Vehicle> =
+            await vehicleService.getVehiclesByFilter(filterAndSortTable);
         updateVehicles(vehiclePage.content);
         updateTotalRows(vehiclePage.totalElements);
         updateLoading(false);
@@ -150,7 +157,11 @@ export default function VehicleList() {
         ) {
             debouncedFetchData(filterAndSortTable);
         }
-    }, [isCompletedAddVehicle, isCompletedEditVehicle, isCompletedDeleteVehicle]);
+    }, [
+        isCompletedAddVehicle,
+        isCompletedEditVehicle,
+        isCompletedDeleteVehicle,
+    ]);
 
     const resetCompletedVehicleEvent = () => {
         updateIsCompletedAddVehicle(false);

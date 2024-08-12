@@ -15,6 +15,7 @@ import RentalPage from "../pages/RentalPage/RentalPage";
 import ReservationPage from "../pages/ReservationPage/ReservationPage";
 import { ReservationContextComp } from "../contexts/ReservationContext";
 import MyReservation from "../components/Reservation/MyReservation";
+import SignupPage from "../pages/SignupPage/SignupPage";
 
 export default function AppRoutes() {
     const sessionStorageService = new SessionStorageService();
@@ -117,6 +118,7 @@ export default function AppRoutes() {
                     <Routes>
                         <Route path="/*" element={<LoginPage />} />
                         <Route path="/login" element={<LoginPage />} />
+                        <Route path="/signup" element={<SignupPage />} />
                     </Routes>
                 </UnauthorizedLayout>
             )}

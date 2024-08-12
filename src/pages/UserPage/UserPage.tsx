@@ -17,17 +17,23 @@ import { Role } from "../../models/Role";
 import { GlobalContext } from "../../contexts/GlobalContext";
 import { SessionStorageService } from "../../services/sessionStorageService";
 import { RoleEnum } from "../../models/enums/RoleEnum";
+import ConfirmDialog from "../../components/Common/ConfirmDialog/ConfirmDialog";
+import { UserService } from "../../services/user/userService";
 
 export default function UserPage() {
     const sessionStorageService = new SessionStorageService();
     const roleService = new RoleService();
-    const { updateLoading } = useContext(GlobalContext);
+    const userService = new UserService();
+    const { updateLoading, updateNotification } = useContext(GlobalContext);
     const {
-        roles,
-        updateRoles,
+        selectedUserId,
         isShowAddUserDialog,
-        updateIsShowAddUserDialog,
         isShowUpdateUserDialog,
+        isShowDeleteUserDialog,
+        updateRoles,
+        updateIsShowAddUserDialog,
+        updateIsShowDeleteUserDialog,
+        updateIsCompletedDeleteUser,
     } = useContext(UserContext);
 
     const showAddUserDialog = () => {
@@ -57,6 +63,24 @@ export default function UserPage() {
         fetchRoles();
     }, []);
 
+    const handleCloseConfirmDialog = (): void => {
+        updateIsShowDeleteUserDialog(false);
+    };
+
+    const handleAcceptConfirmDialog = async (): Promise<void> => {
+        if (selectedUserId) {
+            updateLoading(true);
+            await userService.deleteUserById(selectedUserId);
+            updateIsCompletedDeleteUser(true);
+            updateLoading(false);
+            updateNotification({
+                status: "success",
+                message: "Deleted user successfully",
+            });
+        }
+        updateIsShowDeleteUserDialog(false);
+    };
+
     return (
         <Container maxWidth="xl">
             <Card variant="outlined" sx={{ m: 2, p: 2 }}>
@@ -85,6 +109,14 @@ export default function UserPage() {
             </Card>
             {isShowAddUserDialog && <AddUserDialog />}
             {isShowUpdateUserDialog && <EditUserDialog />}
+            {isShowDeleteUserDialog && (
+                <ConfirmDialog
+                    isShow={isShowDeleteUserDialog}
+                    message="Are you sure you want to delete this user?"
+                    handleClose={handleCloseConfirmDialog}
+                    handleConfirm={handleAcceptConfirmDialog}
+                />
+            )}
         </Container>
     );
 }

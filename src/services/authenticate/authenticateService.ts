@@ -3,6 +3,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { SessionStorageService } from "../sessionStorageService";
 import { StatusCode } from "../../models/enums/StatusCodeEnum";
 import { CustomError } from "../../utils/customError";
+import { User } from "../../models/User";
 
 export class AuthenticateService {
     authenticate = async (
@@ -20,6 +21,34 @@ export class AuthenticateService {
             const authenticatedInfo: AuthenticatedInfo = response.data;
             const sessionStorageService = new SessionStorageService();
             sessionStorageService.saveTokenAndUserInfo(authenticatedInfo);
+        } catch (error) {
+            let errorStatus: number = StatusCode.SERVER_ERROR;
+            let errorMsg: string = "Unknown error";
+
+            if (error instanceof AxiosError) {
+                if (error.response?.status === StatusCode.UNAUTHORIZED) {
+                    errorStatus = error.response?.status;
+                    errorMsg = "Username or password incorrect";
+                } else if (error.response?.status === StatusCode.BAD_REQUEST) {
+                    errorStatus = error.response?.status;
+                    errorMsg = error.message;
+                }
+            }
+
+            throw new CustomError(errorStatus, errorMsg);
+        }
+    };
+
+    signup = async (user: User): Promise<void> => {
+        try {
+            await axios.post(`${process.env.REACT_APP_API_URL}/pub/signup`, {
+                firstname: user.firstname,
+                lastname: user.lastname,
+                username: user.username,
+                password: user.password,
+                email: user.email,
+                phone: user.phone,
+            });
         } catch (error) {
             let errorStatus: number = StatusCode.SERVER_ERROR;
             let errorMsg: string = "Unknown error";
