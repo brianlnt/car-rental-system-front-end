@@ -34,6 +34,7 @@ export default function UserList() {
         updateIsCompletedEditUser,
         updateIsCompletedDeleteUser,
         updateIsShowUpdateUserDialog,
+        updateIsShowDeleteUserDialog,
     } = useContext(UserContext);
 
     const userService = new UserService();
@@ -87,10 +88,8 @@ export default function UserList() {
                 };
 
                 const onClickDelete = async () => {
-                    updateLoading(true);
-                    await userService.deleteUserById(params.row.userId);
-                    updateIsCompletedDeleteUser(true);
-                    updateLoading(false);
+                    updateSelectedUserId(params.row.userId || 0);
+                    updateIsShowDeleteUserDialog(true);
                 };
 
                 return (

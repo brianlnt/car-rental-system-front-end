@@ -7,7 +7,8 @@ import { useContext } from "react";
 import { GlobalContext } from "../../contexts/GlobalContext";
 import { AuthenticateService } from "../../services/authenticate/authenticateService";
 import { CustomError } from "../../utils/customError";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import "./LoginForm.css";
 
 const validationSchema = Yup.object().shape({
     username: Yup.string().required("Username is required"),
@@ -66,7 +67,7 @@ export default function LoginForm() {
                 <Typography
                     sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}
                 >
-                    Login Form
+                    Sign in
                 </Typography>
             </div>
             <div>
@@ -105,14 +106,20 @@ export default function LoginForm() {
                 />
             </div>
             <div>
-                <Box sx={{ float: "right", mt: 1 }}>
+                <Box sx={{ width: "100%", mt: 1 }}>
                     <Button
                         variant="contained"
                         startIcon={<LoginIcon />}
                         type="submit"
+                        fullWidth
                     >
                         Login
                     </Button>
+                </Box>
+                <Box sx={{ float: "right", mt: 2 }}>
+                    <Link className="signup-link" to={"/signup"}>
+                        {"Don't have an account? Sign Up"}
+                    </Link>
                 </Box>
             </div>
         </Box>

@@ -13,6 +13,7 @@ type StateType = {
     isCompletedDeleteUser: boolean;
     isShowAddUserDialog: boolean;
     isShowUpdateUserDialog: boolean;
+    isShowDeleteUserDialog: boolean;
 };
 
 const initStateValue: StateType = {
@@ -25,6 +26,7 @@ const initStateValue: StateType = {
     isCompletedDeleteUser: false,
     isShowAddUserDialog: false,
     isShowUpdateUserDialog: false,
+    isShowDeleteUserDialog: false,
 };
 
 export type ContextType = {
@@ -46,6 +48,7 @@ export type ContextType = {
     updateIsCompletedDeleteUser: Function;
     updateIsShowAddUserDialog: Function;
     updateIsShowUpdateUserDialog: Function;
+    updateIsShowDeleteUserDialog: Function;
 };
 
 const initContextValue = {
@@ -59,6 +62,7 @@ const initContextValue = {
     updateIsCompletedDeleteUser: (isCompletedDeleteUser: boolean) => {},
     updateIsShowAddUserDialog: (isShowAddUserDialog: boolean) => {},
     updateIsShowUpdateUserDialog: (isShowUpdateUserDialog: boolean) => {},
+    updateIsShowDeleteUserDialog: (isShowDeleteUserDialog: boolean) => {},
 };
 
 export const UserContext = createContext(initContextValue);
@@ -102,6 +106,10 @@ export function UsersContextComp() {
         setState((prev) => ({ ...prev, isShowUpdateUserDialog }));
     };
 
+    const updateIsShowDeleteUserDialog = (isShowDeleteUserDialog: boolean) => {
+        setState((prev) => ({ ...prev, isShowDeleteUserDialog }));
+    };
+
     return (
         <UserContext.Provider
             value={{
@@ -114,6 +122,7 @@ export function UsersContextComp() {
                 isCompletedDeleteUser: state.isCompletedDeleteUser,
                 isShowAddUserDialog: state.isShowAddUserDialog,
                 isShowUpdateUserDialog: state.isShowUpdateUserDialog,
+                isShowDeleteUserDialog: state.isShowDeleteUserDialog,
                 updateUsers,
                 updateTotalRows,
                 updateRoles,
@@ -123,6 +132,7 @@ export function UsersContextComp() {
                 updateIsCompletedDeleteUser,
                 updateIsShowAddUserDialog,
                 updateIsShowUpdateUserDialog,
+                updateIsShowDeleteUserDialog,
             }}
         >
             <Outlet />

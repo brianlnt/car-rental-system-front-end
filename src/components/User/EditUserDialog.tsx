@@ -24,23 +24,18 @@ import { CustomError } from "../../utils/customError";
 import { User } from "../../models/User";
 import SendIcon from "@mui/icons-material/Send";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { DataArray } from "@mui/icons-material";
-import { domainToASCII } from "url";
 import { Role } from "../../models/Role";
 
 const validationSchema = Yup.object().shape({
-    firstname: Yup.string().required("Firstname is required"),
-    lastname: Yup.string().required("Lastname is required"),
+    firstname: Yup.string().required("First name is required"),
+    lastname: Yup.string().required("Last name is required"),
     email: Yup.string()
         .required("Email is required")
         .email("Invalid email address"),
     address: Yup.string().required("Address is required"),
     phone: Yup.string()
-        .matches(
-            /^\[\d{3}\]-\d{3}-\d{4}$/,
-            "Phone is invalid. Please input with format [xxx]-xxx-xxxx"
-        )
-        .required("Phone is required"),
+        .required("Phone is required")
+        .matches(/^\d{10}$/, "Phone number should be 10 digits"),
     role: Yup.array()
         .min(1, "Select at least one role")
         .required("Role is required"),
@@ -239,7 +234,7 @@ export default function EditUserDialog() {
                                     required
                                     fullWidth
                                     label="Phone"
-                                    placeholder="Enter your phone with format [xxx]-xxx-xxxx"
+                                    placeholder="Enter your phone number"
                                     error={errors.phone ? true : false}
                                     helperText={errors.phone?.message}
                                 />
