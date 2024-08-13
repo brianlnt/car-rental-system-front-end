@@ -34,4 +34,15 @@ export class ReservationService {
         }
         await apiInstance.delete(`${this.RESERVATION_ENDPOINT}/${id}`);
     };
+
+    getReservationById = async (id: number | undefined): Promise<Reservation[]> => {
+        if (!id || id === 0) {
+            throw new CustomError(
+                StatusCode.SERVER_ERROR,
+                "Id must be not null"
+            );
+        }
+        const response: AxiosResponse = await apiInstance.get(`${this.RESERVATION_ENDPOINT}/user/${id}`);
+        return response.data;
+    };
 }
